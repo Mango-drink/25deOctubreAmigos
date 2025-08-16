@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis XV Años - Ximena</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- AOS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="estilos.css">
+</head>
+
+<body class="bg-[#f5f7fa] text-gray-700 font-montserrat">
+
+
+    <!-- Modal de acceso por código -->
+    <div id="codigo-modal" class="fixed inset-0 bg-black bg-opacity-100 flex items-center justify-center z-50">
+        <div class="bg-white rounded-xl shadow-xl p-8 w-full max-w-md text-center relative">
+            <h2 class="text-3xl font-great-vibes text-[#001742] mb-2">Bienvenido(a)</h2>
+            <p class="text-gray-700 mb-4">Por favor, ingresa tu código de invitación:</p>
+            <input type="text" id="codigo-input" class="w-full p-3 rounded border border-gray-300 focus:outline-none focus:border-[#001742] text-center text-lg uppercase tracking-widest" placeholder="Código de tu invitación">
+            <button id="codigo-btn" class="mt-6 bg-[#001742] text-white font-semibold py-2 px-6 rounded-full hover:bg-[#002366] transition">Entrar</button>
+            <div id="codigo-error" class="text-red-600 mt-3 hidden">Código inválido. Intenta de nuevo.</div>
+        </div>
+    </div>
+
+    <!-- Hero con efecto parallax -->
+    <header class="hero-bg text-white min-h-screen flex flex-col items-center justify-center text-center p-6 relative" data-parallax>
+        <div data-aos="zoom-in" data-aos-duration="1500">
+            <h2 class="text-2xl md:text-3xl tracking-widest uppercase font-light">Mis XV Años</h2>
+            <h1 class="font-great-vibes text-8xl md:text-9xl my-2 text-white"
+                style="text-shadow: 2px 2px 8px rgba(0,0,0,0.7);">Ximena</h1>
+            <h3 class="text-2xl md:text-3xl font-light mt-4">25 de Octubre de 2025</h3>
+        </div>
+
+        <!-- Cuenta regresiva -->
+        <div id="countdown" class="mt-16 w-full max-w-2xl" data-aos="fade-up" data-aos-delay="500">
+            <div class="grid grid-cols-4 gap-4 text-center text-white">
+                <div>
+                    <div id="days" class="text-4xl md:text-5xl font-semibold">00</div>
+                    <div class="mt-1 text-xs uppercase tracking-wider">Días</div>
+                </div>
+                <div>
+                    <div id="hours" class="text-4xl md:text-5xl font-semibold">00</div>
+                    <div class="mt-1 text-xs uppercase tracking-wider">Horas</div>
+                </div>
+                <div>
+                    <div id="minutes" class="text-4xl md:text-5xl font-semibold">00</div>
+                    <div class="mt-1 text-xs uppercase tracking-wider">Minutos</div>
+                </div>
+                <div>
+                    <div id="seconds" class="text-4xl md:text-5xl font-semibold">00</div>
+                    <div class="mt-1 text-xs uppercase tracking-wider">Segundos</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Sección de Bienvenida -->
+        <section class="py-24 px-6 bg-white">
+            <div class="max-w-4xl mx-auto text-center" data-aos="fade-up">
+                <h2 class="font-great-vibes text-6xl md:text-7xl text-[#001742] mb-4">Un Sueño Hecho Realidad</h2>
+                <p class="text-lg max-w-3xl mx-auto text-gray-600">Hoy mi corazón rebosa de alegría al compartir con
+                    ustedes el inicio de una nueva etapa. Agradezco a Dios por su amor infinito, a mis padres por su
+                    guía incondicional, y a mis padrinos por aceptar ser mis consejeros en este viaje.</p>
+                <div class="w-24 h-px bg-[#e6e9f2] mx-auto my-10"></div>
+                <p class="text-xl font-semibold text-[#001742]">Con su presencia, mi celebración estará completa.</p>
+            </div>
+
+            <!-- MENSAJE PERSONALIZADO AQUÍ -->
+            <div id="mensaje-personalizado" class="mt-12 hidden" data-aos="fade-up">
+                <div class="bg-[#e6e9f2] rounded-3xl shadow-glow px-8 py-6 max-w-2xl mx-auto text-center">
+
+                    <!-- Título fijo -->
+                    <h3 id="familia-nombre"
+                        class="text-5xl md:text-6xl font-great-vibes text-[#001742] tracking-wide">Seres Queridos
+                    </h3>
+
+                    <!-- Badge de cantidad -->
+                    <div class="mt-2 flex justify-center">
+                    <span id="familia-cantidad"
+                        class="text-base md:text-lg font-montserrat text-[#0a2d6c] bg-white/80 px-3 py-1 rounded-full shadow-md inline-block">
+                        0 invitados
+                    </span>
+                    </div>
+
+                    <!-- Mensaje personalizado -->
+                    <p id="familia-mensaje" class="mt-6 text-lg md:text-xl text-[#001742] font-light">
+                    Mensaje emocional aquí
+                    </p>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Presentación de la Familia -->
+        <section class="py-24 px-6 bg-[#f5f7fa]">
+            <div class="max-w-5xl mx-auto text-center" data-aos="fade-up">
+                <h2 class="font-great-vibes text-6xl md:text-7xl text-[#001742] mb-16">Con el amor de mi familia</h2>
+                <div class="grid md:grid-cols-2 gap-12">
+                    <div data-aos="fade-right" class="text-center">
+                        <h3 class="text-2xl font-semibold mb-4 tracking-wider uppercase text-[#001742]">Mis Padres</h3>
+                        <p class="text-2xl font-light text-gray-600">Guillermo Rafael Pulido Arenas</p>
+                        <p class="text-2xl font-light text-gray-600">& Adriana Rangel Rangel.</p>
+                    </div>
+                    <div data-aos="fade-left" class="text-center">
+                        <h3 class="text-2xl font-semibold mb-4 tracking-wider uppercase text-[#001742]">Mi madrina
+                        </h3>
+                        <p class="text-2xl font-light text-gray-600">María de Jesús Rangel Rivera.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Ubicación y Fecha -->
+        <section class="py-24 px-6 bg-white">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center mb-16" data-aos="fade-up">
+                    <h2 class="font-great-vibes text-6xl md:text-7xl text-[#001742] mb-4">Acompáñame a Celebrar</h2>
+                    <p class="text-lg text-gray-600">Estos serán los recintos donde escribiremos esta nueva historia.</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8 items-stretch">
+                    <!-- Tarjeta Ceremonia -->
+                    <div data-aos="zoom-in-up"
+                        class="text-center bg-[#f5f7fa] rounded-xl p-8 flex flex-col justify-between shadow-lg hover:shadow-2xl transition-shadow duration-300">
+                        <div>
+                            <i class="fas fa-church text-4xl text-[#0a2d6c] mb-4"></i>
+                            <h2 class="font-great-vibes text-5xl text-[#001742] mb-4">Ceremonia Religiosa</h2>
+                            <p class="text-xl font-semibold text-[#001742]">Parroquia de San Francisco de Asís</p>
+                            <p class="text-gray-500">Miguel Hidalgo Manzana 031, Coacalco de Berriozabal, Méx.</p>
+                            <p class="font-bold text-lg mt-2">25 de Octubre de 2025 - 6:00 PM</p>
+                            <div class="mt-4 flex flex-wrap justify-center gap-2 text-xs">
+                                <a id="gcal-ceremonia" href="#" target="_blank"
+                                    class="bg-[#e6e9f2] text-[#001742] font-semibold px-3 py-1.5 rounded-full transition hover:bg-[#dbe1f1]">Añadir
+                                    a Google Calendar</a>
+                                <a id="ical-ceremonia" href="#"
+                                    class="bg-gray-200 text-gray-800 font-semibold px-3 py-1.5 rounded-full transition hover:bg-gray-300">Añadir
+                                    a iCal/Outlook</a>
+                            </div>
+                        </div>
+                        <a href="https://maps.app.goo.gl/JKvnxS2CxU49ALxo8" target="_blank"
+                            class="inline-block bg-[#0a2d6c] text-white font-bold py-3 px-8 rounded-full hover:bg-[#001742] transition-all duration-300 mt-6">Ver
+                            en Mapa</a>
+                    </div>
+                    <!-- Tarjeta Recepción -->
+                    <div data-aos="zoom-in-up" data-aos-delay="100"
+                        class="text-center bg-[#f5f7fa] rounded-xl p-8 flex flex-col justify-between shadow-lg hover:shadow-2xl transition-shadow duration-300">
+                        <div>
+                            <i class="fas fa-champagne-glasses text-4xl text-[#0a2d6c] mb-4"></i>
+                            <h2 class="font-great-vibes text-5xl text-[#001742] mb-4">Recepción</h2>
+                            <p class="text-xl font-semibold text-[#001742]">Salón Fiesta Colonial</p>
+                            <p class="text-gray-500">C. Cenzontles 66, Parque Residencial Coacalco, Mex.</p>
+                            <p class="font-bold text-lg mt-2">25 de Octubre de 2025 - 7:30 PM</p>
+                            <div class="mt-4 flex flex-wrap justify-center gap-2 text-xs">
+                                <a id="gcal-recepcion" href="#" target="_blank"
+                                    class="bg-[#e6e9f2] text-[#001742] font-semibold px-3 py-1.5 rounded-full transition hover:bg-[#dbe1f1]">Añadir
+                                    a Google Calendar</a>
+                                <a id="ical-recepcion" href="#"
+                                    class="bg-gray-200 text-gray-800 font-semibold px-3 py-1.5 rounded-full transition hover:bg-gray-300">Añadir
+                                    a iCal/Outlook</a>
+                            </div>
+                        </div>
+                        <a href="https://maps.app.goo.gl/H4MGff8uYw9d8VwD9" target="_blank"
+                            class="inline-block bg-[#0a2d6c] text-white font-bold py-3 px-8 rounded-full hover:bg-[#001742] transition-all duration-300 mt-6">Ver
+                            en Mapa</a>
+                    </div>
+                </div>
+                <!-- Código de Vestimenta -->
+                <div class="max-w-md mx-auto mt-16" data-aos="fade-up">
+                    <div class="bg-[#f5f7fa] rounded-xl p-8 text-center shadow-lg">
+                        <h3 class="text-2xl font-semibold text-[#001742] tracking-wider uppercase">Código de Vestimenta
+                        </h3>
+                        <p class="font-great-vibes text-5xl text-[#0a2d6c] mt-2 mb-4">Etiqueta</p>
+                        <button id="dress-code-btn"
+                            class="bg-[#0a2d6c] text-white font-semibold py-2 px-5 rounded-full hover:bg-[#001742] transition-all duration-300 inline-block text-sm">Ver
+                            Ejemplos</button>
+                        <p class="text-xs text-gray-500 mt-4"><span class="font-bold">Nota:</span> Agradecemos de
+                            corazón no usar el color azul rey.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-24 px-6 bg-[#f5f7fa]">
+            <div class="max-w-3xl mx-auto" data-aos="fade-up">
+                <div class="text-center mb-16">
+                    <h2 class="font-great-vibes text-6xl md:text-7xl text-[#001742] mb-4">Nuestro Itinerario</h2>
+                    <p class="text-lg text-gray-600">Una noche mágica llena de momentos especiales.</p>
+                </div>
+                <!-- Timeline sin puntos, con iconos conectados por una línea -->
+                <div class="relative">
+                    <div class="absolute left-5 top-0 bottom-0 w-0.5 bg-[#0a2d6c] opacity-30" style="z-index:0;"></div>
+                    <div class="flex flex-col gap-8 relative z-10">
+                        <!-- 1 -->
+                        <div class="flex items-start gap-6">
+                            <div class="flex flex-col items-center">
+                                <span class="bg-white shadow-lg rounded-full p-2 border-2 border-[#0a2d6c] text-[#0a2d6c] text-2xl">
+                                    <i class="fa-solid fa-church"></i>
+                                </span>
+                            </div>
+                            <div>
+                                <p class="font-bold text-xl text-[#001742] flex items-center gap-3 mb-1">6:00 PM</p>
+                                <p class="text-gray-600 text-lg -mt-1">Ceremonia Religiosa</p>
+                            </div>
+                        </div>
+                        <!-- 2 -->
+                        <div class="flex items-start gap-6">
+                            <div class="flex flex-col items-center">
+                                <span class="bg-white shadow-lg rounded-full p-2 border-2 border-[#0a2d6c] text-[#0a2d6c] text-2xl">
+                                    <i class="fa-solid fa-champagne-glasses"></i>
+                                </span>
+                            </div>
+                            <div>
+                                <p class="font-bold text-xl text-[#001742] flex items-center gap-3 mb-1">7:30 PM</p>
+                                <p class="text-gray-600 text-lg -mt-1">Entrada al salón</p>
+                            </div>
+                        </div>
+                        <!-- 3 -->
+                        <div class="flex items-start gap-6">
+                            <div class="flex flex-col items-center">
+                                <span class="bg-white shadow-lg rounded-full p-2 border-2 border-[#0a2d6c] text-[#0a2d6c] text-2xl">
+                                    <i class="fa-solid fa-person-walking"></i>
+                                </span>
+                            </div>
+                            <div>
+                                <p class="font-bold text-xl text-[#001742] flex items-center gap-3 mb-1">8:20 PM</p>
+                                <p class="text-gray-600 text-lg -mt-1">Primer Baile</p>
+                            </div>
+                        </div>
+                        <!-- 4 -->
+                        <div class="flex items-start gap-6">
+                            <div class="flex flex-col items-center">
+                                <span class="bg-white shadow-lg rounded-full p-2 border-2 border-[#0a2d6c] text-[#0a2d6c] text-2xl">
+                                    <i class="fa-solid fa-utensils"></i>
+                                </span>
+                            </div>
+                            <div>
+                                <p class="font-bold text-xl text-[#001742] flex items-center gap-3 mb-1">9:00 PM</p>
+                                <p class="text-gray-600 text-lg -mt-1">Cena</p>
+                            </div>
+                        </div>
+                        <!-- 5 -->
+                        <div class="flex items-start gap-6">
+                            <div class="flex flex-col items-center">
+                                <span class="bg-white shadow-lg rounded-full p-2 border-2 border-[#0a2d6c] text-[#0a2d6c] text-2xl">
+                                    <i class="fa-solid fa-cake-candles"></i>
+                                </span>
+                            </div>
+                            <div>
+                                <p class="font-bold text-xl text-[#001742] flex items-center gap-3 mb-1">10:00 PM</p>
+                                <p class="text-gray-600 text-lg -mt-1">Brindis y Pastel</p>
+                            </div>
+                        </div>
+                        <!-- 6 -->
+                        <div class="flex items-start gap-6">
+                            <div class="flex flex-col items-center">
+                                <span class="bg-white shadow-lg rounded-full p-2 border-2 border-[#0a2d6c] text-[#0a2d6c] text-2xl">
+                                    <i class="fa-solid fa-music"></i>
+                                </span>
+                            </div>
+                            <div>
+                                <p class="font-bold text-xl text-[#001742] flex items-center gap-3 mb-1">11:00 PM</p>
+                                <p class="text-gray-600 text-lg -mt-1">¡Que inicie la Fiesta!</p>
+                            </div>
+                        </div>
+                            <!-- Nota para papás -->
+                            <div class="mt-12 bg-[#e6e9f2] rounded-xl p-6 shadow-md text-[#001742] text-sm md:text-base font-medium flex items-start gap-4">
+                                <div class="text-2xl text-[#0a2d6c]">
+                                    <i class="fas fa-info-circle"></i>
+                                </div>
+                                <p>
+                                    A la llegada al salón, los <strong>niños menores de 3 años</strong> estarán con sus papás en mesa; los <strong>mayores de 3 años</strong> disfrutarán en la <strong>zona infantil</strong>.
+                                </p>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Galería de Recuerdos -->
+    <section class="py-24 px-6 section-bg">
+        <div class="max-w-6xl mx-auto text-center">
+            <h2 class="font-great-vibes text-6xl md:text-7xl title-cursive mb-12">Mis Recuerdos</h2>
+            <div id="gallery-container" class="flex overflow-x-auto space-x-6 py-4 scroll-container" style="scroll-behavior: auto;">
+                <div class="gallery-thumb flex-shrink-0 w-64 rounded-lg shadow-lg cursor-pointer">
+                    <img loading="lazy" src="fotos/foto1.jpeg" alt="Recuerdo de Ximena 1" class="w-full h-80 object-cover rounded-lg">
+                </div>
+                <div class="gallery-thumb flex-shrink-0 w-64 rounded-lg shadow-lg cursor-pointer">
+                    <img loading="lazy" src="fotos/foto2.jpeg" alt="Recuerdo de Ximena 2"
+                        class="w-full h-80 object-cover rounded-lg">
+                </div>
+                <div class="gallery-thumb flex-shrink-0 w-64 rounded-lg shadow-lg cursor-pointer">
+                    <img loading="lazy" src="fotos/foto3.jpeg" alt="Recuerdo de Ximena 3"
+                        class="w-full h-80 object-cover rounded-lg">
+                </div>
+                <div class="gallery-thumb flex-shrink-0 w-64 rounded-lg shadow-lg cursor-pointer">
+                    <img loading="lazy" src="fotos/foto4.jpeg" alt="Recuerdo de Ximena 4"
+                        class="w-full h-80 object-cover rounded-lg">
+                </div>
+                <div class="gallery-thumb flex-shrink-0 w-64 rounded-lg shadow-lg cursor-pointer">
+                    <img loading="lazy" src="fotos/foto5.jpeg" alt="Recuerdo de Ximena 5"
+                        class="w-full h-80 object-cover rounded-lg">
+                </div>
+                <div class="gallery-thumb flex-shrink-0 w-64 rounded-lg shadow-lg cursor-pointer">
+                    <img loading="lazy" src="fotos/foto6.jpeg" alt="Recuerdo de Ximena 6"
+                        class="w-full h-80 object-cover rounded-lg">
+                </div>
+                <div class="gallery-thumb flex-shrink-0 w-64 rounded-lg shadow-lg cursor-pointer">
+                    <img loading="lazy" src="fotos/foto7.jpeg" alt="Recuerdo de Ximena 7"
+                        class="w-full h-80 object-cover rounded-lg">
+                </div>
+                <div class="gallery-thumb flex-shrink-0 w-64 rounded-lg shadow-lg cursor-pointer">
+                    <img loading="lazy" src="fotos/foto8.jpeg" alt="Recuerdo de Ximena 8"
+                        class="w-full h-80 object-cover rounded-lg">
+                </div>
+            </div>
+
+            <div id="gallery-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden">
+                <button id="prev-image" class="absolute left-5 text-white text-4xl font-bold">❮</button>
+                <img id="modal-image" src="" alt="Recuerdo ampliado" class="max-h-[90vh] max-w-full rounded-lg shadow-2xl border-4 border-white">
+                <button id="next-image" class="absolute right-5 text-white text-4xl font-bold">❯</button>
+                <button id="modal-close" class="absolute top-4 right-8 text-white text-5xl font-bold">×</button>
+            </div>
+        </div>
+    </section>
+
+
+        <!-- Mosaico de Fotos -->
+        <section class="py-24 px-6 bg-white">
+            <div class="max-w-5xl mx-auto text-center" data-aos="fade-up">
+                <h2 class="font-great-vibes text-6xl md:text-7xl text-[#001742] mb-12">Un Mosaico de Momentos</h2>
+                <div class="relative mx-auto max-w-4xl rounded-xl overflow-hidden shadow-xl transition duration-300 hover:shadow-2xl">
+                    <!-- CAMBIA ESTA URL por la de tu imagen de mosaico -->
+                    <img src="fotos/CollageXimena.png" alt="Mosaico de recuerdos de Ximena" class="w-full h-auto object-cover">
+                </div>
+            </div>
+        </section>
+        
+        <!-- Mesa de Regalos -->
+        <section class="py-24 px-6 bg-[#f5f7fa]">
+            <div class="max-w-4xl mx-auto text-center" data-aos="fade-up">
+                <h2 class="font-great-vibes text-6xl md:text-7xl text-[#001742] mb-6">Mesa de Regalos</h2>
+                <p class="text-lg max-w-2xl mx-auto text-gray-600">
+                    Si deseas tener un detalle, podrás elegir un regalo que te recuerde a mi o dejar tu presente en el buzón de sobres. Lo más importante es que me acompañes en este día especial.
+                </p>
+                <div class="mt-12 flex flex-wrap justify-center gap-8" data-aos="fade-up" data-aos-delay="200">
+                    <!-- Tarjeta 1 -->
+                    <div class="bg-white p-10 rounded-2xl shadow-xl text-center w-full max-w-sm flex flex-col items-center">
+                        <div class="text-[#002366] mb-4">
+                            <i class="fas fa-envelope-open-text text-4xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-[#001742]">Buzón de Sobres</h3>
+                        <p class="mt-2 text-sm text-gray-600">Habrá un buzón especial en la mesa principal para colocar tu sobre. ¡Muchas gracias!</p>
+                    </div>
+                    <!-- Tarjeta 2 -->
+                    <div class="bg-white p-10 rounded-2xl shadow-xl text-center w-full max-w-sm flex flex-col items-center">
+                        <div class="text-[#002366] mb-4">
+                            <i class="fas fa-gift text-4xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-[#001742]">Regalo de tu elección</h3>
+                        <p class="mt-2 text-sm text-gray-600">Cualquier obsequio que desees compartir será apreciado con mucho cariño.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+        <!-- Confirmación de Asistencia -->
+        <section class="py-24 px-6 bg-white">
+            <div class="max-w-2xl mx-auto text-center">
+                <div data-aos="fade-up">
+                    <h3 class="font-great-vibes text-6xl text-[#001742]">Confirma tu Asistencia</h3>
+                    <p class="mt-4 text-lg text-gray-600">Por favor, confirma antes del 01 de Octubre, 2025. <br>¡Será
+                        un honor contar contigo!</p>
+                    <div class="mt-8">
+                        <a href="https://docs.google.com/forms/d/e/1FAIpQLSefC_Sa0ca9Ak9ATuxm21OiTLf7hNTFuKb5v0ZyKg1CPpVSnA/viewform?usp=sf_link"
+                            target="_blank" 
+                            data-skip-video
+                            class="bg-[#0a2d6c] text-white font-bold py-4 px-10 rounded-full text-lg hover:bg-[#001742] transition-transform hover:scale-105 inline-block">Confirmar
+                            aquí</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Pie de página -->
+    <footer class="text-center py-12 bg-[#f5f7fa]">
+        <p class="font-great-vibes text-4xl text-[#001742]">¡Te espero!</p>
+        <p class="text-sm text-gray-500 mt-2">Ximena | 25 de Octubre de 2025</p>
+    </footer>
+
+    </div>
+
+    <!-- Modal de Código de Vestimenta -->
+    <div id="dress-code-modal"
+        class="modal-container fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50 hidden"
+        onclick="closeModal('dress-code-modal')">
+        <div class="bg-white w-full max-w-sm rounded-lg p-6 relative text-center shadow-xl"
+            onclick="event.stopPropagation()"><button onclick="closeModal('dress-code-modal')"
+                class="absolute top-3 right-4 text-gray-600 hover:text-gray-900 text-2xl font-bold">×</button>
+            <h3 class="font-great-vibes text-4xl text-[#001742] mb-4">Ejemplo de Vestimenta</h3><img
+                src="fotos/vestimenta.png" alt="Ejemplo de vestimenta formal" class="w-full h-auto rounded-lg shadow-lg"
+                onerror="this.onerror=null;this.src='https://placehold.co/400x500/cccccc/FFFFFF?text=Error';">
+            <p class="text-sm text-gray-500 mt-4">Se recomienda vestido largo para mujeres y traje de etiqueta para hombres.
+            </p>
+        </div>
+    </div>
+
+    <!-- Música de Fondo -->
+    <audio id="bg-music" loop>
+        <source src="assets/audio/fondo.mp3" type="audio/mpeg">
+    </audio>
+    <button id="music-toggle" aria-label="Reproducir o pausar música"
+        class="fixed bottom-5 right-5 bg-[#001742]/50 backdrop-blur-sm text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg z-40 border border-white/20 hover:bg-[#001742]/70 transition">
+        <svg id="play-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <svg id="pause-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+    </button>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="main.js"></script>
+
+
+</body>
+
+</html>
