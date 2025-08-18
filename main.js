@@ -444,12 +444,77 @@ function mostrarDatosFamilia(datos) {
   configurarAccesoCodigo();
 });
 
-// Helpers globales para modales (si no existen ya en tu HTML)
-function openModal(id) {
-  document.getElementById(id)?.classList.remove('hidden');
-  document.body.style.overflow = 'hidden';
-}
-function closeModal(id) {
-  document.getElementById(id)?.classList.add('hidden');
-  document.body.style.overflow = 'auto';
-}
+/* ===== MODALES (scroll-lock sin saltos + fix hueco móvil) ===== */
+(() => {
+  let lockCounter = 0;
+  let savedScrollY = 0;
+
+  function lockScroll() {
+    if (lockCounter === 0) {
+      savedScrollY = window.scrollY || document.documentElement.scrollTop;
+
+      // Compensa la desaparición de la barra de scroll
+      const sbWidth = window.innerWidth - document.documentElement.clientWidth;
+      if (sbWidth > 0) document.body.style.paddingRight = sbWidth + 'px';
+
+      // Bloqueo robusto (mejor que overflow:hidden en iOS/Android)
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${savedScrollY}px`;
+      document.body.style.left = '0';
+      document.body.style.right = '0';
+      document.body.style.width = '100%';
+    }
+    lockCounter++;
+  }
+
+  function unlockScroll() {
+    lockCounter = Math.max(0, lockCounter - 1);
+    if (lockCounter === 0) {
+      // Quita el bloqueo y restaura la posición
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      document.body.style.width = '';
+      document.body.style.paddingRight = '';
+      window.scrollTo(0, savedScrollY);
+
+      // Nudge + resize para forzar el reflow (evita el “hueco”)
+      requestAnimationFrame(() => {
+        window.dispatchEvent(new Event('resize'));
+        window.scrollTo(window.scrollX, window.scrollY + 1);
+        window.scrollTo(window.scrollX, window.scrollY);
+      });
+    }
+  }
+
+  // Helpers globales
+  window.openModal = function (id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.remove('hidden');
+    lockScroll();
+  };
+
+  window.closeModal = function (id) {
+    const el = document.getElementById(id);
+    if (el) el.classList.add('hidden');
+    unlockScroll();
+  };
+
+  // Opcional: cerrar con Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal-container:not(.hidden)')
+        .forEach(m => m.id && window.closeModal(m.id));
+    }
+  });
+
+  // Opcional: close por overlay si tu overlay tiene la clase .modal-overlay
+  document.addEventListener('click', (e) => {
+    if (e.target.classList && e.target.classList.contains('modal-overlay')) {
+      const modal = e.target.closest('.modal-container');
+      if (modal && modal.id) window.closeModal(modal.id);
+    }
+  });
+})();

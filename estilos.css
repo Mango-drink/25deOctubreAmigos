@@ -1,195 +1,160 @@
-/*Estilos Internos para Mejoras Visuales*/
-/* Fuentes personalizadas */
-.font-great-vibes {
-    font-family: 'Great Vibes', cursive;
+/* =========================
+   Fuentes & Paleta
+   ========================= */
+.font-great-vibes { font-family: 'Great Vibes', cursive; }
+.font-montserrat  { font-family: 'Montserrat', sans-serif; }
+
+:root{
+  --royal-dark: #001742;
+  --royal-base: #0a2d6c;
+  --royal-light: #e6e9f2;
+  --royal-extralight: #f5f7fa;
 }
 
-.font-montserrat {
-    font-family: 'Montserrat', sans-serif;
+/* =========================
+   HERO (compatible iPhone)
+   ========================= */
+.hero-bg{
+  /* Fallback sólido detrás de la imagen */
+  background-color: var(--royal-dark);
+
+  /* Superposición + imagen */
+  background-image:
+    linear-gradient(rgba(0,23,66,.6), rgba(0,23,66,.6)),
+    url('fotos/xime.png');
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  /* iPhone: desactiva el "fixed" */
+  background-attachment: scroll;
+
+  /* Altura pantalla en iOS moderno */
+  min-height: 100svh;
 }
 
-/* MEJORA: Paleta de Colores Azul Rey */
-:root {
-    --royal-dark: #001742;
-    --royal-base: #0a2d6c;
-    /* Un poco más claro para interacción */
-    --royal-light: #e6e9f2;
-    /* Para fondos claros y acentos */
-    --royal-extralight: #f5f7fa;
-    /* Casi blanco, para alternar fondos */
+/* Desktop / puntero fino: habilita parallax */
+@media (min-width: 1025px) and (pointer: fine){
+  .hero-bg{ background-attachment: fixed; }
 }
 
-/* MEJORA: Fondo del Hero con el nuevo color y superposición */
-.hero-bg {
-    /* El hexadecimal #001742 es rgb(0, 23, 66) */
-    background-image: linear-gradient(rgba(0, 23, 66, 0.6), rgba(0, 23, 66, 0.6)), url('fotos/xime.png');
-    /*https://placehold.co/1200x800/001742/FFF?text=Foto+Principal+de+Ximena*/
-    background-size: cover;
-    background-position: center;
+/* iOS Safari: fuerza scroll por si acaso */
+@supports (-webkit-touch-callout: none){
+  .hero-bg{ background-attachment: scroll !important; }
 }
 
-/* MEJORA: Estilos para la galería con scroll y efecto hover */
-.scroll-container {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+/* =========================
+   Utilidades
+   ========================= */
+.shadow-glow{
+  box-shadow: 0 0 24px 2px #fff, 0 10px 24px rgba(0,23,66,.13);
 }
 
-.scroll-container::-webkit-scrollbar {
-    display: none;
+/* Ocultar barras de scroll en contenedores horizontales */
+.scroll-container{
+  -ms-overflow-style: none;   /* IE/Edge legacy */
+  scrollbar-width: none;      /* Firefox */
+}
+.scroll-container::-webkit-scrollbar{ display: none; } /* Chrome/Safari */
+
+/* =========================
+   Galería
+   ========================= */
+.gallery-thumb{
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+  border-radius: .75rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / .1), 0 2px 4px -2px rgb(0 0 0 / .1);
+}
+.gallery-thumb img{
+  display: block;
+  width: 100%;
+  height: auto;
+  transition: transform .4s ease;
+}
+.gallery-thumb:hover img{ transform: scale(1.05); }
+
+.gallery-thumb .overlay{
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0,0,0,.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity .3s ease;
+}
+.gallery-thumb:hover .overlay{ opacity: 1; }
+
+/* =========================
+   Modal
+   ========================= */
+.modal-container.hidden{ display: none; }
+
+#prev-image, #next-image{
+  background: rgba(0,0,0,.4);
+  border-radius: 50%;
+  padding: .5rem .8rem;
+}
+#prev-image:hover, #next-image:hover{
+  background: rgba(0,0,0,.6);
 }
 
-.gallery-thumb {
-    position: relative;
-    cursor: pointer;
-    overflow: hidden;
-    border-radius: 0.75rem;
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+/* =========================
+   Timeline
+   ========================= */
+.timeline-item{
+  position: relative;
+  padding-bottom: 2.5rem;
+}
+.timeline-item:not(:last-child)::before{
+  content: '';
+  position: absolute;
+  top: 1rem;
+  left: .4rem;
+  bottom: -1rem;
+  width: 2px;
+  background-color: var(--royal-light);
+}
+.timeline-dot{
+  position: absolute;
+  left: 0;
+  top: .5rem;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 9999px;
+  background-color: var(--royal-base);
+  border: 2px solid var(--royal-extralight);
+}
+.timeline-icon:hover{
+  transform: scale(1.2);
+  transition: transform .3s ease;
 }
 
-.gallery-thumb .overlay {
-    position: absolute;
-    inset: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity 0.3s ease;
+/* =========================
+   Chips de invitados
+   ========================= */
+#lista-invitados li{
+  background: #ffffffcc;
+  color: var(--royal-base);
+  border: 1px solid #dbe1f1;
+  padding: 6px 10px;
+  border-radius: 9999px;
+  font-size: .9rem;
+  box-shadow: 0 1px 2px rgba(0,0,0,.05);
+  transition: transform .2s ease;
 }
-
-.gallery-thumb:hover .overlay {
-    opacity: 1;
-}
-
-/* Estilos para el modal */
-.modal-container.hidden {
-    display: none;
-}
-
-/* Estilos para la línea de tiempo (timeline) con el nuevo color */
-.timeline-item {
-    padding-bottom: 2.5rem;
-    position: relative;
-}
-
-.timeline-item:not(:last-child)::before {
-    content: '';
-    position: absolute;
-    top: 1rem;
-    left: 0.4rem;
-    bottom: -1rem;
-    width: 2px;
-    background-color: var(--royal-light);
-}
-
-.timeline-dot {
-    position: absolute;
-    left: 0;
-    top: 0.5rem;
-    width: 1rem;
-    height: 1rem;
-    border-radius: 9999px;
-    background-color: var(--royal-base);
-    border: 2px solid var(--royal-extralight);
-}
-
-.scroll-container::-webkit-scrollbar {
-    display: none;
-}
-
-.scroll-container {
-    scrollbar-width: none;
-}
-
-.shadow-glow {
-    box-shadow: 0 0 24px 2px #fff, 0 10px 24px rgba(0, 23, 66, 0.13);
-}
-
-.font-great-vibes {
-    font-family: 'Great Vibes', cursive;
-}
-
-.font-montserrat {
-    font-family: 'Montserrat', sans-serif;
-}
-
-:root {
-    --royal-dark: #001742;
-    --royal-base: #0a2d6c;
-    --royal-light: #e6e9f2;
-    --royal-extralight: #f5f7fa;
-}
-
-/* Hero con parallax */
-.hero-bg {
-    background-image: linear-gradient(rgba(0, 23, 66, 0.6), rgba(0, 23, 66, 0.6)), url('fotos/xime.png');
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-}
-
-/* Galería */
-.scroll-container::-webkit-scrollbar {
-    display: none;
-}
-
-.scroll-container {
-    scrollbar-width: none;
-}
-
-.gallery-thumb {
-    position: relative;
-    cursor: pointer;
-    overflow: hidden;
-    border-radius: 0.75rem;
-}
-
-.gallery-thumb:hover img {
-    transform: scale(1.05);
-    transition: transform 0.4s ease;
-}
-
-/* Iconos itinerario animados */
-.timeline-icon:hover {
-    transform: scale(1.2);
-    transition: transform 0.3s ease;
-}
-
-/* Modal flechas */
-#prev-image,
-#next-image {
-    background: rgba(0, 0, 0, 0.4);
-    border-radius: 50%;
-    padding: 0.5rem 0.8rem;
-}
-
-#prev-image:hover,
-#next-image:hover {
-    background: rgba(0, 0, 0, 0.6);
-}
-
-.hero-bg {
-    will-change: background-position;
-    /* ayuda al navegador a preparar la capa */
-}
+#lista-invitados li:hover{ transform: translateY(-1px); }
 
 
-/* Chips de invitados */
-#lista-invitados li {
-    background: #ffffffcc;
-    color: var(--royal-base);
-    border: 1px solid #dbe1f1;
-    padding: 6px 10px;
-    border-radius: 9999px;
-    font-size: 0.9rem;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, .05);
+/* Evita cualquier desborde horizontal en móvil */
+html, body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
-/* opcional: animación sutil al aparecer */
-#lista-invitados li {
-    transition: transform .2s ease;
-}
-
-#lista-invitados li:hover {
-    transform: translateY(-1px);
-}
+/* Ya lo tienes, pero reafirmo el alto del hero estable en móvil */
+.hero-bg { min-height: 100svh; }
