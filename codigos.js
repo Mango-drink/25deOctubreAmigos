@@ -11,7 +11,7 @@ const CODIGOS = {
         generico: true,
         invitados: 0,
         display: "Invitado",
-        mensaje: "¡Bienvenido(a)! Gracias por acompañarme en este día especial."
+        mensaje: "¡Gracias por acompañarme! Tu presencia es lo más importante para mi. Nos vemos el 25 de octubre"
     },
 
     // === Familias de ejemplo (ajusta libremente) ===
@@ -47,7 +47,7 @@ const CODIGOS = {
     },
     "FAM-RIVAS01": {
         invitados: 3,
-        display: "Padrinos",
+        display: "Rodolfo Rivas",
         nombres: ["Adulto 1", "Adulto 2", "Adulto 3"],
         mensaje: "¡Padrinos! Me encantará contar con su compañía hoy y siempre pero más en este día tan especial para mi. Tienen 3 lugares reservados para su familia. ¡Nos vemos el 25 de octubre!"
     },
