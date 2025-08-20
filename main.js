@@ -669,16 +669,17 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function construirSnapshotHTML() {
-    // Clon profundo del documento actual
-    const doc = document.documentElement.cloneNode(true);
+    // 1) Crear un DOCUMENT real a partir del HTML actual
+    const htmlActual = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+    const doc = new DOMParser().parseFromString(htmlActual, "text/html");
 
-    // Trabajamos en el clon
-    stripGatesAndScripts(doc);
-    await inlineLocalCSS(doc);
-    await inlineImagesAndMedia(doc);
-    tweakRuntimeThings(doc);
+    // 2) Trabajamos en el clon/documento
+    stripGatesAndScripts(doc);        // quita modal de códigos y scripts locales
+    await inlineLocalCSS(doc);        // inyecta <link rel="stylesheet"> → <style> (y sus url(...) internas)
+    await inlineImagesAndMedia(doc);  // convierte <img> y <source> locales a dataURL
+    tweakRuntimeThings(doc);          // pequeños ajustes (no autoplay, etc.)
 
-    // Sugerencia: agrega un aviso pequeño en el pie del snapshot
+    // 3) Nota al pie (opcional)
     const footer = doc.querySelector("footer");
     if (footer) {
       const note = doc.createElement("p");
@@ -687,10 +688,11 @@ document.addEventListener('DOMContentLoaded', () => {
       footer.appendChild(note);
     }
 
-    // Serializa
-    const html = "<!DOCTYPE html>\n" + doc.outerHTML;
-    return new Blob([html], { type: "text/html;charset=utf-8" });
+    // 4) Serializar y devolver Blob
+    const serializado = "<!DOCTYPE html>\n" + doc.documentElement.outerHTML;
+    return new Blob([serializado], { type: "text/html;charset=utf-8" });
   }
+
 
   async function descargarInvitacion() {
     const blob = await construirSnapshotHTML();
