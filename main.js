@@ -1,463 +1,22 @@
-document.addEventListener('DOMContentLoaded', () => {
-  // --- INICIALIZACIONES DE LIBRERÍAS ---
-  AOS.init({ duration: 800, once: true, offset: 50 });
+// main.js — versión compacta y corregida
 
-  // --- CUENTA REGRESIVA ---
-  function iniciarCuentaRegresiva() {
-    const countdownDate = new Date("Oct 25, 2025 18:00:00").getTime();
-    const countdownElement = document.getElementById('countdown');
-    if (!countdownElement) return;
-    const dias = document.getElementById('days');
-    const horas = document.getElementById('hours');
-    const minutos = document.getElementById('minutes');
-    const segundos = document.getElementById('seconds');
-
-    function actualizar() {
-      const now = Date.now();
-      const distance = countdownDate - now;
-      if (distance < 0) {
-        clearInterval(interval);
-        countdownElement.innerHTML = '<div class="text-2xl font-semibold">¡El gran día ha llegado!</div>';
-        return;
-      }
-      dias.textContent = String(Math.floor(distance / (1000 * 60 * 60 * 24))).padStart(2, '0');
-      horas.textContent = String(Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
-      minutos.textContent = String(Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
-      segundos.textContent = String(Math.floor((distance % (1000 * 60)) / 1000)).padStart(2, '0');
-    }
-    actualizar();
-    const interval = setInterval(actualizar, 1000);
-  }
-
-  // --- EFECTO PARALLAX HERO (suavizado con rAF + listener pasivo) ---
-  (function () {
-    const hero = document.querySelector('[data-parallax]') || document.querySelector('.hero-bg');
-    if (!hero) return;
-
-    let ticking = false;
-    const onScroll = () => {
-      if (!ticking) {
-        ticking = true;
-        requestAnimationFrame(() => {
-          const offset = window.scrollY * 0.4;
-          hero.style.backgroundPosition = `center ${offset}px`;
-          ticking = false;
-        });
-      }
-    };
-
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll(); // posición inicial
-  })();
-
-  // --- EFECTO MÁQUINA DE ESCRIBIR EN MENSAJE PERSONALIZADO ---
-  function animarMensajePersonalizado() {
-    const mensaje = document.getElementById('familia-mensaje');
-    if (mensaje) {
-      const texto = mensaje.textContent.trim();
-      mensaje.textContent = '';
-      let i = 0;
-      const escribir = () => {
-        if (i < texto.length) {
-          mensaje.textContent += texto.charAt(i);
-          i++;
-          setTimeout(escribir, 40);
-        }
-      };
-      escribir();
-    }
-  }
-
-  // --- MODAL VESTIMENTA ---
-  function configurarModalVestimenta() {
-    const btn = document.getElementById('dress-code-btn');
-    if (btn) btn.addEventListener('click', () => openModal('dress-code-modal'));
-  }
-
-  // --- GALERÍA DE RECUERDOS ---
-  function configurarGaleria() {
-    const galleryContainer = document.getElementById('gallery-container');
-    const modal = document.getElementById('gallery-modal');
-    const modalImage = document.getElementById('modal-image');
-    const closeModalButton = document.getElementById('modal-close');
-    const prevBtn = document.getElementById('prev-image');
-    const nextBtn = document.getElementById('next-image');
-    const thumbs = galleryContainer ? galleryContainer.querySelectorAll('img') : [];
-    let currentIndex = 0;
-
-    if (!(galleryContainer && modal && modalImage && closeModalButton)) return;
-
-    // Duplicar para scroll infinito
-    Array.from(galleryContainer.children).forEach(item => {
-      galleryContainer.appendChild(item.cloneNode(true));
-    });
-
-    let isScrolling = true;
-    function continuousScroll() {
-      if (isScrolling) {
-        galleryContainer.scrollLeft += 1;
-        if (galleryContainer.scrollLeft >= galleryContainer.scrollWidth / 2) {
-          galleryContainer.scrollLeft = 0;
-        }
-      }
-      requestAnimationFrame(continuousScroll);
-    }
-    galleryContainer.addEventListener('mouseenter', () => { isScrolling = false; });
-    galleryContainer.addEventListener('mouseleave', () => { isScrolling = true; });
-
-    // Abrir modal
-    galleryContainer.addEventListener('click', (event) => {
-      const thumb = event.target.closest('.gallery-thumb');
-      if (thumb) {
-        currentIndex = Array.from(thumbs).indexOf(thumb.querySelector('img'));
-        modalImage.src = thumb.querySelector('img').src;
-        openModal('gallery-modal');
-        isScrolling = false;
-      }
-    });
-
-    // Navegación con flechas
-    if (prevBtn && nextBtn) {
-      prevBtn.addEventListener('click', () => {
-        currentIndex = (currentIndex - 1 + thumbs.length) % thumbs.length;
-        modalImage.src = thumbs[currentIndex].src;
-      });
-      nextBtn.addEventListener('click', () => {
-        currentIndex = (currentIndex + 1) % thumbs.length;
-        modalImage.src = thumbs[currentIndex].src;
-      });
-    }
-
-    // Cerrar modal
-    closeModalButton.addEventListener('click', () => {
-      closeModal('gallery-modal');
-      modalImage.src = "";
-      isScrolling = true;
-    });
-    modal.addEventListener('click', (event) => {
-      if (event.target === modal) {
-        closeModal('gallery-modal');
-        modalImage.src = "";
-        isScrolling = true;
-      }
-    });
-
-    isScrolling = true;
-    continuousScroll();
-  }
-
-  // --- MÚSICA DE FONDO (simple, confiable, volumen medio + fade-in) ---
-  function configurarMusica() {
-    const musicToggle = document.getElementById('music-toggle');
-    const bgMusic = document.getElementById('bg-music');
-    const playIcon = document.getElementById('play-icon');
-    const pauseIcon = document.getElementById('pause-icon');
-    if (!(musicToggle && bgMusic && playIcon && pauseIcon)) {
-      console.warn('[Musica] Falta algún elemento (toggle, audio o iconos).');
-      return;
-    }
-
-    // Comprobaciones de carga del archivo
-    bgMusic.addEventListener('error', () => {
-      console.error('[Musica] Error cargando el audio. Revisa la ruta del src en <audio>.');
-    });
-    bgMusic.addEventListener('canplay', () => {
-      console.log('[Musica] Audio listo para reproducir.');
-    });
-
-    // Volumen medio por defecto
-    const TARGET_VOL = 0.5;   // 50%
-    const FADE_TIME = 700;    // ms
-
-    let started = false;
-
-    async function startSimple() {
-      try {
-        // Asegúrate de no estar muteado
-        bgMusic.muted = false;
-        // Comienza bajo para el fade-in
-        bgMusic.volume = 0.01;
-
-        // Reproduce (ya hay gesto del usuario)
-        await bgMusic.play();
-
-        // Fade-in hacia TARGET_VOL
-        const steps = 14;
-        const stepDur = FADE_TIME / steps;
-        let i = 0;
-        const step = () => {
-          i++;
-          bgMusic.volume = Math.min(TARGET_VOL, 0.01 + (TARGET_VOL - 0.01) * (i / steps));
-          if (i < steps) setTimeout(step, stepDur);
-        };
-        step();
-
-        playIcon.classList.add('hidden');
-        pauseIcon.classList.remove('hidden');
-        started = true;
-        console.log('[Musica] Reproduciendo a volumen medio.');
-      } catch (err) {
-        console.warn('[Musica] No se pudo iniciar aún:', err?.message || err);
-      }
-    }
-
-    // Solo gestos “fuertes” cuentan: click / touchstart (no scroll)
-    const firstGesture = async () => {
-      if (!started) await startSimple();
-      window.removeEventListener('click', firstGesture, true);
-      window.removeEventListener('touchstart', firstGesture, true);
-      window.removeEventListener('keydown', firstGesture, true); // Enter también sirve
-    };
-    window.addEventListener('click', firstGesture, true);
-    window.addEventListener('touchstart', firstGesture, true);
-    window.addEventListener('keydown', firstGesture, true);
-
-    // Botón play/pausa
-    musicToggle.addEventListener('click', async () => {
-      if (bgMusic.paused) {
-        await startSimple();
-      } else {
-        bgMusic.pause();
-        playIcon.classList.remove('hidden');
-        pauseIcon.classList.add('hidden');
-        console.log('[Musica] Pausado por el usuario.');
-      }
-    });
-  }
-
-  // --- ENLACES DE CALENDARIO ---
-  function agregarEnlacesCalendario() {
-    function formatDateICS(dateStr) {
-      const d = new Date(dateStr);
-      return (
-        d.getFullYear().toString() +
-        String(d.getMonth() + 1).padStart(2, "0") +
-        String(d.getDate()).padStart(2, "0") +
-        "T" +
-        String(d.getHours()).padStart(2, "0") +
-        String(d.getMinutes()).padStart(2, "0") +
-        "00"
-      );
-    }
-    function generateCalendarLinks(id, title, desc, loc, startISO, endISO) {
-      const start = formatDateICS(startISO);
-      const end = formatDateICS(endISO);
-      const gcalUrl = new URL('https://www.google.com/calendar/render');
-      gcalUrl.searchParams.append('action', 'TEMPLATE');
-      gcalUrl.searchParams.append('text', title);
-      gcalUrl.searchParams.append('dates', `${start}/${end}`);
-      gcalUrl.searchParams.append('details', desc);
-      gcalUrl.searchParams.append('location', loc);
-      document.getElementById(`gcal-${id}`).href = gcalUrl.toString();
-      const ical = [
-        'BEGIN:VCALENDAR', 'VERSION:2.0', 'BEGIN:VEVENT',
-        `URL:${document.location.href}`,
-        `DTSTART:${start}`, `DTEND:${end}`,
-        `SUMMARY:${title}`, `DESCRIPTION:${desc}`, `LOCATION:${loc}`,
-        'END:VEVENT', 'END:VCALENDAR'
-      ].join('\n');
-      document.getElementById(`ical-${id}`).href = `data:text/calendar;charset=utf8,${encodeURIComponent(ical)}`;
-      document.getElementById(`ical-${id}`).download = `${id}.ics`;
-    }
-    generateCalendarLinks(
-      'ceremonia',
-      'XV Años de Ximena - Ceremonia',
-      'Ceremonia religiosa por los XV Años de Ximena. ¡Acompáñanos!',
-      'Parroquia de San Francisco de Asís, Miguel Hidalgo Manzana 031, Coacalco de Berriozabal, Méx.',
-      '2025-10-25T18:00:00',
-      '2025-10-25T19:00:00'
-    );
-    generateCalendarLinks(
-      'recepcion',
-      'XV Años de Ximena - Recepción',
-      '¡A celebrar en la fiesta de XV Años de Ximena!',
-      'Salón "Fiesta Colonial", C. Cenzontles 66, Parque Residencial Coacalco, Mex.',
-      '2025-10-25T19:30:00',
-      '2025-10-26T03:00:00'
-    );
-  }
-
-  // --- MODALES GENERALES ---
-  window.openModal = function (id) {
-    document.getElementById(id).classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-  };
-  window.closeModal = function (id) {
-    document.getElementById(id).classList.add('hidden');
-    document.body.style.overflow = 'auto';
-  };
-
-  // --- MODAL DE CÓDIGO PERSONALIZADO (Seres queridos + invitados + mensaje) ---
-  function configurarAccesoCodigo() {
-    const modal = document.getElementById('codigo-modal');
-    const input = document.getElementById('codigo-input');
-    const btn = document.getElementById('codigo-btn');
-    const errorMsg = document.getElementById('codigo-error');
-
-    const mensajeContainer = document.getElementById('mensaje-personalizado');
-    const tituloEl = document.getElementById('familia-nombre');
-    const cantidadInvitados = document.getElementById('familia-cantidad');
-    const mensajeFamilia = document.getElementById('familia-mensaje');
-
-    if (!(modal && input && btn && mensajeContainer && tituloEl && cantidadInvitados && mensajeFamilia)) return;
-
-    // Asegurar UL para chips (si no existe, lo creamos antes del mensaje)
-    let listaInvitadosEl = document.getElementById('lista-invitados');
-    if (!listaInvitadosEl) {
-      listaInvitadosEl = document.createElement('ul');
-      listaInvitadosEl.id = 'lista-invitados';
-      listaInvitadosEl.style.display = 'flex';
-      listaInvitadosEl.style.flexWrap = 'wrap';
-      listaInvitadosEl.style.gap = '8px';
-      listaInvitadosEl.style.justifyContent = 'center';
-      mensajeFamilia.parentElement.insertBefore(listaInvitadosEl, mensajeFamilia);
-    }
-
-    // “Base de datos” local de ejemplo
-    const codigosInvitacion = {
-      "FAM-GASCA": { invitados: ["Adulto 1", "Adulto 2", "Adulto 3"], mensaje: "¡Salvador Rangel Gasca! Me encantará contar con su compañía. Tienen 3 lugares reservados para su familia. ¡Nos vemos el 25 de octubre!" },
-      "FAM-RANGEL01": { invitados: ["Adulto 1", "Adulto 2"], mensaje: "¡Hola Madrina! Llego el momento que tanto esperamos, gracias por acompañarme en mi camino, me encantará contar con su compañía siempre, pero en especial este 25 de Octubre. Tienen 2 lugares reservados. Un beso y un abrazo." },
-      "FAM-SANDOVAL": { invitados: ["Adulto 1", "Adulto 2", "Adulto 3"], mensaje: "¡Sra. Juanita Sandoval! Me encantará contar con su compañía. Tienen 3 lugares reservados para su familia. ¡Nos vemos el 25 de octubre!" },
-      "FAM-RANGEL02": { invitados: ["Adulto 1", "Adulto 2", "Adulto 3", "Adulto 4"], mensaje: "¡Eladio Rangel! Me encantará contar con su compañía. Tienen 4 lugares reservados para su familia. ¡Nos vemos el 25 de octubre!" },
-      "FAM-PEREZ": { invitados: ["Adulto 1", "Adulto 2"], mensaje: "¡Andres Pérez! Me encantará contar con su compañía. Tienen 2 lugares reservados para su familia. ¡Nos vemos el 25 de octubre!" },
-      "FAM-RIVAS01": { invitados: ["Adulto 1", "Adulto 2", "Adulto 3"], mensaje: "¡Padrinos! Me encantará contar con su compañía hoy y siempre pero más en este día tan especial para mi. Tienen 3 lugares reservados para su familia. ¡Nos vemos el 25 de octubre!" },
-      "FAM-RIVAS02": { invitados: ["Adulto 1", "Adulto 2"], mensaje: "¡Ronaldo Rivas! Me encantará contar con su compañía. Tienen 2 lugares reservados para su familia. ¡Nos vemos el 25 de octubre!" },
-      "FAM-MARTINEZ": { invitados: ["Adulto 1", "Adulto 2", "Niñ@", "Niñ@"], mensaje: "¡Arturo Martinez! Me emocionará compartir este día con ustedes. Reservé 4 lugares: 2 adultos y 2 niños. Gracias por ser parte de mi historia." },
-      "FAM-FRANCO01": { invitados: ["Adulto 1", "Adulto 2", "Adulto 3", "Adulto 4"], mensaje: "¡Carlos Franco! Me encantará contar con su compañía. Tienen 4 lugares reservados para su familia. ¡Nos vemos el 25 de octubre!" },
-      "FAM-FRANCO02": { invitados: ["Adulto 1", "Adulto 2", "Niñ@"], mensaje: "¡Carla Franco! Me emocionará compartir este día con ustedes. Reservé 3 lugares: 2 adultos y 1 niño. Gracias por ser parte de mi historia." },
-      "FAM-MUNOZ": { invitados: ["Adulto 1", "Adulto 2", "Adulto 3", "Adulto 4", "Adulto 5", "Adulto 6"], mensaje: "¡Eduardo Muñoz! Me encantará contar con su compañía. Tienen 6 lugares reservados para su familia. ¡Nos vemos el 25 de octubre!" },
-      "FAM-ALBARRAN01": { invitados: ["Adulto 1", "Adulto 2", "Adulto 3", "Adulto 4", "Adulto 5"], mensaje: "¡Padrinos! Por fin llego el momento de acompañarme, no solo hoy, siempre. Me encantará contar con su compañía. Tienen 5 lugares reservados para su familia. ¡Nos vemos el 25 de octubre!" },
-      "FAM-ALBARRAN02": { invitados: ["Adulto 1", "Adulto 2"], mensaje: "¡Gatito! Cómo pasa el tiempo pero sigues aquí conmigo como el primer día me encantará contar con su compañía. Tienen 2 lugares reservados. ¡Nos vemos el 25 de octubre!" },
-      "FAM-RANGEL03": { invitados: ["Adulto 1", "Adulto 2"], mensaje: "¡Salvador Rangel! Me encantará contar con su compañía. Tienen 2 lugares reservados para su familia. ¡Nos vemos el 25 de octubre!" },
-      "FAM-SANCHEZ": { invitados: ["Adulto 1", "Adulto 2", "Adulto 3", "Niñ@", "Niñ@"], mensaje: "¡Lucia Sanchez! Me emocionará compartir este día con ustedes. Reservé 5 lugares: 3 adultos y 2 niños. Gracias por ser parte de mi historia." },
-      "FAM-GUZMAN01": { invitados: ["Adulto 1", "Adulto 2", "Adulto 3"], mensaje: "¡Felipe Guzman! Me encantará contar con su compañía. Tienen 3 lugares reservados para su familia. ¡Nos vemos el 25 de octubre!" },
-      "FAM-GUZMAN02": { invitados: ["Adulto 1", "Adulto 2"], mensaje: "¡Alicia Guzman! Me encantará contar con su compañía. Tienen 2 lugares reservados para su familia. ¡Nos vemos el 25 de octubre!" },
-      "FAM-GUZMAN03": { invitados: ["Adulto 1"], mensaje: "¡Monica Guzman! Me encantará contar con su compañía. Tienen 1 lugares reservados para su familia. ¡Nos vemos el 25 de octubre!" },
-      "FAM-RANGEL04": { invitados: ["Adulto 1", "Adulto 2", "Niñ@"], mensaje: "¡Neni! Absolutamente gracias por todo el apoyo que me has brindado, llego el día y me emocionará compartir este día con ustedes. Reservé 3 lugares: 2 adultos y 1 niño. Gracias por ser parte de mi historia." },
-      "FAM-RANGEL05": { invitados: ["Adulto 1", "Adulto 2"], mensaje: "¡Tari y Lito! Gracias por no dejarme sola en este camino. Me encantará contar con su compañía. Tienen 2 lugares reservados. ¡Nos vemos el 25 de octubre! Los quiero mucho" },
-      "FAM-FRANCO03": { invitados: ["Adulto 1", "Adulto 2", "Adulto 3"], mensaje: "¡Julio Franco! Me encantará contar con su compañía. Tienen 3 lugares reservados para su familia. ¡Nos vemos el 25 de octubre!" },
-      "FAM-FRANCO04": { invitados: ["Adulto 1", "Adulto 2", "Adulto 3", "Adulto 4"], mensaje: "¡Yuliana Franco! Me encantará contar con su compañía. Tienen 4 lugares reservados para su familia. ¡Nos vemos el 25 de octubre!" },
-      "SRA-LIDIA": { invitados: ["Adulto 1", "Adulto 2", "Adulto 3"], mensaje: "¡sra. Lidia! Me encantará contar con su compañía. Tienen 3 lugares reservados para su familia. ¡Nos vemos el 25 de octubre!" },
-      "FAM-RIVERA": { invitados: ["Adulto 1", "Adulto 2", "Adulto 3", "Adulto 4"], mensaje: "¡Enrique Rivera! Me encantará contar con su compañía. Tienen 4 lugares reservados para su familia. ¡Nos vemos el 25 de octubre!" },
-      "FAM-ALFARO": { invitados: ["Adulto 1", "Adulto 2", "Adulto 3", "Adulto 4"], mensaje: "¡Angelica Alfaro! Me encantará contar con su compañía. Tienen 4 lugares reservados para su familia. ¡Nos vemos el 25 de octubre!" },
-      "FAM-GARCIA": { invitados: ["Adulto 1", "Adulto 2", "Adulto 3", "Adulto 4"], mensaje: "¡Cinthia García! Me encantará contar con su compañía. Tienen 4 lugares reservados para su familia. ¡Nos vemos el 25 de octubre!" },
-      "RITZUKO": { invitados: ["Adulto 1", "Adulto 2"], mensaje: "¡Ritzuko! Me encantará contar con su compañía. Tienen 2 lugares reservados para su familia. ¡Nos vemos el 25 de octubre!" },
-      "FAM-ESLAVA": { invitados: ["Adulto 1", "Adulto 2", "Adulto 3", "Niñ@"], mensaje: "¡Juan Eslava! Me emocionará compartir este día con ustedes. Reservé 4 lugares: 3 adultos y 1 niño. Gracias por ser parte de mi historia." },
-      "FAM-RANGEL06": { invitados: ["Adulto 1", "Adulto 2", "Adulto 3"], mensaje: "¡Marina Rangel! Me encantará contar con su compañía. Tienen 3 lugares reservados para su familia. ¡Nos vemos el 25 de octubre!" },
-      "FAM-ARENAS": { invitados: ["Adulto 1", "Adulto 2", "Adulto 3", "Adulto 4", "Adulto 5", "Adulto 6"], mensaje: "¡Teresa Arenas! Me encantará contar con su compañía. Tienen 6 lugares reservados para su familia. ¡Nos vemos el 25 de octubre!" },
-      "FAM-ARREDONDO01": { invitados: ["Adulto 1", "Adulto 2"], mensaje: "¡Angel Arredondo! Me encantará contar con su compañía. Tienen 2 lugares reservados para su familia. ¡Nos vemos el 25 de octubre!" },
-      "FAM-ARREDONDO02": { invitados: ["Adulto 1", "Adulto 2", "Niñ@", "Niñ@"], mensaje: "¡Eduardo Arredondo! Me emocionará compartir este día con ustedes. Reservé 4 lugares: 2 adultos y 2 niños. Gracias por ser parte de mi historia." },
-      "FAM-RANGEL07": { invitados: ["Adulto 1", "Adulto 2"], mensaje: "¡Irma Rangel! Me encantará contar con su compañía. Tienen 2 lugares reservados para su familia. ¡Nos vemos el 25 de octubre!" },
-    };
-
-    // Código genérico (solo muestra mensaje)
-    codigosInvitacion["INVITADO"] = {
-      invitados: [],
-      soloMensaje: true,
-      mensaje: "¡Gracias por acompañarme! Tu presencia es lo más importante y juntos disfrutaremos de este día tan especial. Nos vemos el 25 de octubre"
-    };
-
-
-    // Mostrar modal al inicio
-    modal.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-
-    function renderChips(nombres = []) {
-      listaInvitadosEl.innerHTML = '';
-      nombres.forEach(nombre => {
-        const li = document.createElement('li');
-        li.textContent = nombre;
-        li.style.background = '#ffffffcc';
-        li.style.color = '#0a2d6c';
-        li.style.border = '1px solid #dbe1f1';
-        li.style.padding = '6px 10px';
-        li.style.borderRadius = '9999px';
-        li.style.fontSize = '0.9rem';
-        li.style.boxShadow = '0 1px 2px rgba(0,0,0,.05)';
-        listaInvitadosEl.appendChild(li);
-      });
-    }
-
-function mostrarDatosFamilia(datos) {
-  // Título
-  tituloEl.textContent = 'Seres Queridos';
-
-  // Ocultar SIEMPRE la lista de nombres
-  if (listaInvitadosEl) {
-    listaInvitadosEl.innerHTML = '';
-    listaInvitadosEl.classList.add('hidden');
-  }
-
-  const esSoloMensaje = !!datos.soloMensaje;
-  const n = Array.isArray(datos.invitados) ? datos.invitados.length : 0;
-
-  // Número de invitados (solo cuando NO es el genérico)
-  if (esSoloMensaje) {
-    cantidadInvitados.classList.add('hidden');
-  } else {
-    cantidadInvitados.classList.remove('hidden');
-    cantidadInvitados.textContent = `${n} invitado${n !== 1 ? 's' : ''}`;
-  }
-
-  // Mensaje
-  mensajeFamilia.textContent = datos.mensaje || '';
-
-  // Mostrar / cerrar modal
-  mensajeContainer.classList.remove('hidden');
-  modal.classList.add('hidden');
-  errorMsg.classList.add('hidden');
-  document.body.style.overflow = 'auto';
-
-  // Animación
-  animarMensajePersonalizado();
-}
-
-
-    function verificarCodigo() {
-      const codigo = input.value.trim().toUpperCase();
-      const datos = codigosInvitacion[codigo];
-      if (datos) {
-        mostrarDatosFamilia(datos);
-      } else {
-        errorMsg.classList.remove('hidden');
-      }
-    }
-
-    btn.addEventListener('click', verificarCodigo);
-    input.addEventListener('keydown', (e) => { if (e.key === 'Enter') verificarCodigo(); });
-
-    // Si llega con ?code=FAMXXXX
-    const params = new URLSearchParams(location.search);
-    const codeParam = (params.get('code') || '').toUpperCase();
-    if (codeParam && codigosInvitacion[codeParam]) {
-      input.value = codeParam;
-      verificarCodigo();
-    }
-  }
-
-  // --- LLAMADA A TODAS LAS FUNCIONES ---
-  iniciarCuentaRegresiva();
-  configurarModalVestimenta();
-  configurarGaleria();
-  configurarMusica();
-  agregarEnlacesCalendario();
-  configurarAccesoCodigo();
-});
-
-/* ===== MODALES (scroll-lock sin saltos + fix hueco móvil) ===== */
+// ===================== UTILIDADES GLOBALES DE MODAL (scroll-lock robusto) =====================
 (() => {
   let lockCounter = 0;
   let savedScrollY = 0;
+  let savedScrollX = 0;
 
   function lockScroll() {
     if (lockCounter === 0) {
-      savedScrollY = window.scrollY || document.documentElement.scrollTop;
+      // Guarda posición actual
+      savedScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+      savedScrollX = window.scrollX || document.documentElement.scrollLeft || 0;
 
-      // Compensa la desaparición de la barra de scroll
+      // Compensa la barra de scroll
       const sbWidth = window.innerWidth - document.documentElement.clientWidth;
       if (sbWidth > 0) document.body.style.paddingRight = sbWidth + 'px';
 
-      // Bloqueo robusto (mejor que overflow:hidden en iOS/Android)
+      // Fija el body
       document.body.style.position = 'fixed';
       document.body.style.top = `-${savedScrollY}px`;
       document.body.style.left = '0';
@@ -469,23 +28,31 @@ function mostrarDatosFamilia(datos) {
 
   function unlockScroll() {
     lockCounter = Math.max(0, lockCounter - 1);
-    if (lockCounter === 0) {
-      // Quita el bloqueo y restaura la posición
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.left = '';
-      document.body.style.right = '';
-      document.body.style.width = '';
-      document.body.style.paddingRight = '';
-      window.scrollTo(0, savedScrollY);
+    if (lockCounter !== 0) return;
 
-      // Nudge + resize para forzar el reflow (evita el “hueco”)
-      requestAnimationFrame(() => {
-        window.dispatchEvent(new Event('resize'));
-        window.scrollTo(window.scrollX, window.scrollY + 1);
-        window.scrollTo(window.scrollX, window.scrollY);
-      });
-    }
+    // Quita el fijo del body
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    document.body.style.width = '';
+    document.body.style.paddingRight = '';
+
+    // 🔧 Desactiva el scroll-smooth sólo para restaurar al píxel exacto
+    const html = document.documentElement;
+    const prevBehavior = html.style.scrollBehavior;
+    html.style.scrollBehavior = 'auto';
+
+    // Restaura posición exacta
+    window.scrollTo(savedScrollX, savedScrollY);
+
+    // Vuelve a como estaba
+    html.style.scrollBehavior = prevBehavior;
+
+    // Pequeño nudge para forzar reflow (sin mover al usuario)
+    requestAnimationFrame(() => {
+      window.dispatchEvent(new Event('resize'));
+    });
   }
 
   // Helpers globales
@@ -495,14 +62,13 @@ function mostrarDatosFamilia(datos) {
     el.classList.remove('hidden');
     lockScroll();
   };
-
   window.closeModal = function (id) {
     const el = document.getElementById(id);
     if (el) el.classList.add('hidden');
     unlockScroll();
   };
 
-  // Opcional: cerrar con Escape
+  // Cerrar con Escape
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       document.querySelectorAll('.modal-container:not(.hidden)')
@@ -510,7 +76,7 @@ function mostrarDatosFamilia(datos) {
     }
   });
 
-  // Opcional: close por overlay si tu overlay tiene la clase .modal-overlay
+  // Cerrar por overlay si usas .modal-overlay
   document.addEventListener('click', (e) => {
     if (e.target.classList && e.target.classList.contains('modal-overlay')) {
       const modal = e.target.closest('.modal-container');
@@ -518,3 +84,638 @@ function mostrarDatosFamilia(datos) {
     }
   });
 })();
+
+
+// ===================== APP =====================
+document.addEventListener('DOMContentLoaded', () => {
+  // ---------- Librerías ----------
+  if (window.AOS) AOS.init({ duration: 800, once: true, offset: 50 });
+
+  // ---------- Countdown (CDMX) ----------
+  (function iniciarCuentaRegresiva() {
+    const countdownElement = document.getElementById('countdown');
+    if (!countdownElement) return;
+    // Ajusta el offset si ese día aplica DST de CDMX (-06:00 usualmente)
+    const target = new Date('2025-10-25T18:00:00-06:00').getTime();
+    const dias = document.getElementById('days');
+    const horas = document.getElementById('hours');
+    const minutos = document.getElementById('minutes');
+    const segundos = document.getElementById('seconds');
+
+    function actualizar() {
+      const distance = target - Date.now();
+      if (distance <= 0) {
+        clearInterval(iv);
+        countdownElement.innerHTML = '<div class="text-2xl font-semibold">¡El gran día ha llegado!</div>';
+        return;
+      }
+      const s = Math.floor(distance / 1000);
+      const d = Math.floor(s / 86400);
+      const h = Math.floor((s % 86400) / 3600);
+      const m = Math.floor((s % 3600) / 60);
+      const ss = s % 60;
+      dias.textContent = String(d).padStart(2, '0');
+      horas.textContent = String(h).padStart(2, '0');
+      minutos.textContent = String(m).padStart(2, '0');
+      segundos.textContent = String(ss).padStart(2, '0');
+    }
+    actualizar();
+    const iv = setInterval(actualizar, 1000);
+  })();
+
+  // ---------- Parallax (rAF + passive) ----------
+  (function () {
+    const hero = document.querySelector('[data-parallax]') || document.querySelector('.hero-bg');
+    if (!hero) return;
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const offset = (window.scrollY || 0) * 0.4;
+        hero.style.backgroundPosition = `center ${Math.round(offset)}px`;
+        ticking = false;
+      });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  })();
+
+  // ---------- Animar mensaje (typewriter suave) ----------
+  function animarMensajePersonalizado() {
+    const mensaje = document.getElementById('familia-mensaje');
+    if (!mensaje) return;
+    const texto = mensaje.textContent.trim();
+    mensaje.textContent = '';
+    let i = 0;
+    (function escribir() {
+      if (i < texto.length) {
+        mensaje.textContent += texto.charAt(i++);
+        setTimeout(escribir, 40);
+      }
+    })();
+  }
+
+  // ---------- Modal Vestimenta ----------
+  (function configurarModalVestimenta() {
+    const btn = document.getElementById('dress-code-btn');
+    btn?.addEventListener('click', () => openModal('dress-code-modal'));
+  })();
+
+  // ---------- Galería con auto-scroll + modal ----------
+  (function configurarGaleria() {
+    const container = document.getElementById('gallery-container');
+    const modal = document.getElementById('gallery-modal');
+    const modalImage = document.getElementById('modal-image');
+    const prevBtn = document.getElementById('prev-image');
+    const nextBtn = document.getElementById('next-image');
+    const closeBtn = document.getElementById('modal-close');
+    if (!(container && modal && modalImage && prevBtn && nextBtn && closeBtn)) return;
+
+    // Construir lista base (originales)
+    const cardsOriginal = [...container.querySelectorAll('.gallery-thumb')];
+    const imgsOriginal = cardsOriginal.map(c => c.querySelector('img')).filter(Boolean);
+    const srcsOriginal = imgsOriginal.map(img => img.currentSrc || img.src);
+
+    // Duplicar para "loop" visual
+    cardsOriginal.forEach(card => container.appendChild(card.cloneNode(true)));
+
+    let isScrolling = true;
+    let currentIndex = 0;
+    function loopScroll() {
+      if (isScrolling) {
+        container.scrollLeft += 1;
+        if (container.scrollLeft >= container.scrollWidth / 2) container.scrollLeft = 0;
+      }
+      requestAnimationFrame(loopScroll);
+    }
+    container.addEventListener('mouseenter', () => { isScrolling = false; });
+    container.addEventListener('mouseleave', () => { isScrolling = true; });
+
+    // Delegación de clicks (toma índice respecto a originales)
+    container.addEventListener('click', (e) => {
+      const card = e.target.closest('.gallery-thumb');
+      if (!card) return;
+      const img = card.querySelector('img');
+      const src = img?.currentSrc || img?.src || '';
+      const idx = srcsOriginal.indexOf(src);
+      if (idx < 0) return; // hizo click en clon cuyo src no está en originales (raro)
+      currentIndex = idx;
+      modalImage.src = srcsOriginal[currentIndex];
+      openModal('gallery-modal');
+      isScrolling = false;
+    });
+
+    function mover(delta) {
+      const len = srcsOriginal.length;
+      currentIndex = (currentIndex + delta + len) % len;
+      modalImage.src = srcsOriginal[currentIndex];
+    }
+    prevBtn.addEventListener('click', () => mover(-1));
+    nextBtn.addEventListener('click', () => mover(+1));
+    closeBtn.addEventListener('click', () => { closeModal('gallery-modal'); isScrolling = true; modalImage.src = ''; });
+    modal.addEventListener('click', (e) => { if (e.target === modal) { closeModal('gallery-modal'); isScrolling = true; modalImage.src = ''; } });
+
+    loopScroll();
+  })();
+
+  // ---------- Música (arranque tras gesto + toggle) ----------
+  (function configurarMusica() {
+    const btn = document.getElementById('music-toggle');
+    const audio = document.getElementById('bg-music');
+    const playI = document.getElementById('play-icon');
+    const pauseI = document.getElementById('pause-icon');
+    if (!(btn && audio && playI && pauseI)) return;
+
+    const TARGET_VOL = 0.5;
+    const FADE_TIME = 700;
+    let started = false;
+
+    async function start() {
+      try {
+        audio.muted = false;
+        audio.volume = 0.01;
+        await audio.play();
+        // fade-in
+        const steps = 14, stepDur = FADE_TIME / steps;
+        let i = 0;
+        (function step() {
+          i++;
+          audio.volume = Math.min(TARGET_VOL, 0.01 + (TARGET_VOL - 0.01) * (i / steps));
+          if (i < steps) setTimeout(step, stepDur);
+        })();
+        playI.classList.add('hidden'); pauseI.classList.remove('hidden');
+        started = true;
+      } catch (e) { /* silencio */ }
+    }
+
+    const firstGesture = async () => { if (!started) await start(); };
+    window.addEventListener('click', firstGesture, { capture: true, once: true });
+    window.addEventListener('touchstart', firstGesture, { capture: true, once: true });
+    window.addEventListener('keydown', firstGesture, { capture: true, once: true });
+
+    btn.addEventListener('click', async () => {
+      if (audio.paused) await start();
+      else { audio.pause(); playI.classList.remove('hidden'); pauseI.classList.add('hidden'); }
+    });
+  })();
+
+  // ---------- Calendar (GCal en UTC + ICS en hora local con TZID) ----------
+  (function agregarEnlacesCalendario() {
+    // Para Google Calendar: UTC con sufijo Z
+    function toICSUTC(d) {
+      const dt = new Date(d);
+      const pad = n => String(n).padStart(2, '0');
+      const yyyy = dt.getUTCFullYear();
+      const mm = pad(dt.getUTCMonth() + 1);
+      const dd = pad(dt.getUTCDate());
+      const hh = pad(dt.getUTCHours());
+      const mi = pad(dt.getUTCMinutes());
+      const ss = pad(dt.getUTCSeconds());
+      return `${yyyy}${mm}${dd}T${hh}${mi}${ss}Z`;
+    }
+
+    // Para archivo .ics local: hora local (sin Z)
+    function toICSLocal(d) {
+      const dt = new Date(d);
+      const pad = n => String(n).padStart(2, '0');
+      const yyyy = dt.getFullYear();
+      const mm = pad(dt.getMonth() + 1);
+      const dd = pad(dt.getDate());
+      const hh = pad(dt.getHours());
+      const mi = pad(dt.getMinutes());
+      const ss = pad(dt.getSeconds());
+      return `${yyyy}${mm}${dd}T${hh}${mi}${ss}`;
+    }
+
+    function generateCalendarLinks(id, title, desc, loc, startISO, endISO) {
+      // --------- Enlace Google Calendar (UTC) ---------
+      const startZ = toICSUTC(startISO);
+      const endZ = toICSUTC(endISO);
+
+      const g = new URL('https://www.google.com/calendar/render');
+      g.searchParams.set('action', 'TEMPLATE');
+      g.searchParams.set('text', title);
+      g.searchParams.set('dates', `${startZ}/${endZ}`);
+      g.searchParams.set('details', desc || '');
+      g.searchParams.set('location', loc || '');
+
+      const aG = document.getElementById(`gcal-${id}`);
+      if (aG) aG.href = g.toString();
+
+      // --------- Archivo .ics (hora local con TZID) ---------
+      const tz = 'America/Mexico_City';
+      const startLocal = toICSLocal(startISO);
+      const endLocal = toICSLocal(endISO);
+
+      const ics = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//XV Ximena//ES',
+        'CALSCALE:GREGORIAN',
+        'METHOD:PUBLISH',
+        `X-WR-TIMEZONE:${tz}`,
+        'BEGIN:VEVENT',
+        `${`DTSTAMP:${toICSUTC(new Date())}`}`, // DTSTAMP en UTC
+        `DTSTART;TZID=${tz}:${startLocal}`,
+        `DTEND;TZID=${tz}:${endLocal}`,
+        `SUMMARY:${title}`,
+        `DESCRIPTION:${(desc || '').replace(/\n/g, '\\n')}`,
+        `LOCATION:${loc || ''}`,
+        'END:VEVENT',
+        'END:VCALENDAR'
+      ].join('\r\n');
+
+      const aI = document.getElementById(`ical-${id}`);
+      if (aI) {
+        aI.href = 'data:text/calendar;charset=utf-8,' + encodeURIComponent(ics);
+        aI.download = `${id}.ics`;
+      }
+    }
+
+    // ▼▼ Tus 2 eventos con horario de CDMX ▼▼
+    generateCalendarLinks(
+      'ceremonia',
+      'XV Años de Ximena - Ceremonia',
+      'Ceremonia religiosa por los XV Años de Ximena. ¡Acompáñanos!',
+      'Parroquia de San Francisco de Asís, Miguel Hidalgo Manzana 031, Coacalco de Berriozabal, Méx.',
+      '2025-10-25T18:00:00-06:00', // 25 oct 2025 6:00 PM CDMX
+      '2025-10-25T19:00:00-06:00'  // 25 oct 2025 7:00 PM CDMX
+    );
+
+    generateCalendarLinks(
+      'recepcion',
+      'XV Años de Ximena - Recepción',
+      '¡A celebrar en la fiesta de XV Años de Ximena!',
+      'Salón "Fiesta Colonial", C. Cenzontles 66, Parque Residencial Coacalco, Mex.',
+      '2025-10-25T19:30:00-06:00', // 25 oct 2025 7:30 PM CDMX
+      '2025-10-26T03:00:00-06:00'  // 26 oct 2025 3:00 AM CDMX
+    );
+  })();
+
+
+  // ---------- Gate por código (privacidad: título fijo + conteo) ----------
+  (function configurarAccesoCodigo() {
+    const modal = document.getElementById('codigo-modal');
+    const input = document.getElementById('codigo-input');
+    const btn = document.getElementById('codigo-btn');
+    const error = document.getElementById('codigo-error');
+
+    const wrap = document.getElementById('mensaje-personalizado');
+    const titulo = document.getElementById('familia-nombre');
+    const cant = document.getElementById('familia-cantidad');
+    const msg = document.getElementById('familia-mensaje');
+
+    if (!(modal && input && btn && wrap && titulo && cant && msg)) return;
+
+    // Asegura UL para chips pero oculto (no mostrar nombres)
+    let ul = document.getElementById('lista-invitados');
+    if (!ul) {
+      ul = document.createElement('ul');
+      ul.id = 'lista-invitados';
+      ul.classList.add('hidden');
+      msg.parentElement.insertBefore(ul, msg);
+    }
+
+    const DB = window.CODIGOS || window.INVITADOS || {};
+    // Código genérico
+    DB['INVITADO'] = DB['INVITADO'] || {
+      invitados: [],
+      soloMensaje: true,
+      mensaje: '¡Gracias por acompañarme! Tu presencia es lo más importante. Nos vemos el 25 de octubre.'
+    };
+
+    function aplicarFamiliaPorEntry(entry) {
+      // === NOMBRE A MOSTRAR ===
+      const displayName = (window.nombreParaMostrar)
+        ? window.nombreParaMostrar(entry)
+        : (entry?.display || entry?.nombre || entry?.familia || 'Seres Queridos');
+      titulo.textContent = displayName;
+
+      // === CANTIDAD / BADGE ===
+      // Soporta invitados:number | invitados:array | cantidad:number | numInvitados:number
+      const n = (typeof entry?.invitados === 'number') ? entry.invitados
+        : Array.isArray(entry?.invitados) ? entry.invitados.length
+          : (typeof entry?.cantidad === 'number') ? entry.cantidad
+            : (typeof entry?.numInvitados === 'number') ? entry.numInvitados
+              : 0;
+
+      // Oculta el badge si es genérico o 0
+      if (entry?.generico || entry?.soloMensaje || n === 0) {
+        cant.classList.add('hidden');
+      } else {
+        cant.classList.remove('hidden');
+        cant.textContent = (window.etiquetaInvitados)
+          ? window.etiquetaInvitados(n)
+          : `${n} invitado${n === 1 ? '' : 's'}`;
+      }
+
+      // === MENSAJE ===
+      msg.textContent = entry?.mensaje || '';
+
+      // (Opcional) chips con nombres si existen
+      const lista = document.getElementById('lista-invitados');
+      if (lista) {
+        if (Array.isArray(entry?.nombres) && entry.nombres.length) {
+          lista.innerHTML = entry.nombres.map(nm => `<li>${nm}</li>`).join('');
+          // si no quieres mostrar los chips, mantén <ul> con class hidden
+        } else {
+          lista.innerHTML = '';
+        }
+      }
+
+      wrap.classList.remove('hidden');
+      closeModal('codigo-modal');
+      animarMensajePersonalizado();
+      error.classList.add('hidden');
+    }
+
+
+
+    function verificarCodigo(val) {
+      const code = (val || '').trim().toUpperCase();
+      const entry = DB[code];
+      if (entry) aplicarFamiliaPorEntry(entry);
+      else error.classList.remove('hidden');
+    }
+
+    // Mostrar modal al entrar
+    openModal('codigo-modal');
+
+    btn.addEventListener('click', () => verificarCodigo(input.value));
+    input.addEventListener('keydown', (e) => { if (e.key === 'Enter') verificarCodigo(input.value); });
+
+    // ?code=FAM-XXXX precargado
+    const pre = (new URLSearchParams(location.search).get('code') || '').toUpperCase();
+    if (pre && DB[pre]) { input.value = pre; verificarCodigo(pre); }
+
+    // Exponer mínima API para el picker
+    window.__aplicarFamiliaEntry = aplicarFamiliaPorEntry;
+    window.__DB_FAMILIAS = DB;
+  })();
+
+  // ---------- Picker "Entrar sin código" + atajos (?guest / ?c=) ----------
+  (function setupPickerAndGuest() {
+    const DB = window.__DB_FAMILIAS || window.CODIGOS || {};
+    const btnGuest = document.getElementById('btn-guest');
+    const modal = document.getElementById('picker-modal');
+    const buscar = document.getElementById('picker-buscar');
+    const lista = document.getElementById('picker-lista');
+    const btnOk = document.getElementById('picker-confirmar');
+    const btnCancel = document.getElementById('picker-cancelar');
+
+    if (!btnGuest || !modal) {
+      // Pero sí soporta atajos por querystring
+      const qp = new URLSearchParams(location.search);
+      const isGuest = ['1', 'si', 'true'].includes((qp.get('guest') || '').toLowerCase());
+      const code = (qp.get('c') || qp.get('code') || '').toUpperCase();
+      setTimeout(() => {
+        if (code && DB[code]) window.__aplicarFamiliaEntry(DB[code]);
+        else if (isGuest && DB['INVITADO']) window.__aplicarFamiliaEntry(DB['INVITADO']);
+      }, 350);
+      return;
+    }
+
+    const FAMS = Object.entries(DB)
+      .filter(([code, entry]) => !entry?.generico) // oculta el genérico en la lista
+      .map(([code, entry]) => {
+        const nombre = (window.nombreParaMostrar)
+          ? window.nombreParaMostrar(entry)
+          : (entry?.display || entry?.nombre || entry?.familia || 'Seres Queridos');
+
+        const cantidad = (typeof entry?.invitados === 'number') ? entry.invitados
+          : Array.isArray(entry?.invitados) ? entry.invitados.length
+            : (typeof entry?.cantidad === 'number') ? entry.cantidad
+              : (typeof entry?.numInvitados === 'number') ? entry.numInvitados
+                : 0;
+
+        return { code, nombre, cantidad, entry };
+      });
+
+    let selected = null;
+
+    function render(filter) {
+      const q = (filter || '').toLowerCase();
+      const items = FAMS
+        .filter(f => (f.nombre || '').toLowerCase().includes(q) || f.code.toLowerCase().includes(q))
+        .sort((a, b) => (a.nombre || '').localeCompare(b.nombre || ''));
+      lista.innerHTML = '';
+      selected = null; btnOk.disabled = true;
+
+      items.forEach(f => {
+        const el = document.createElement('button');
+        el.type = 'button';
+        el.className = 'w-full text-left p-3 rounded border hover:bg-gray-50';
+        el.innerHTML = `<div class="font-medium">${f.nombre || 'Seres Queridos'}</div>
+                        <div class="text-xs text-gray-600">${f.code} • ${f.cantidad} invitado${f.cantidad === 1 ? '' : 's'}</div>`;
+        el.addEventListener('click', () => {
+          [...lista.querySelectorAll('button')].forEach(b => b.classList.remove('ring-2', 'ring-[#001742]'));
+          el.classList.add('ring-2', 'ring-[#001742]');
+          selected = f; btnOk.disabled = false;
+        });
+        lista.appendChild(el);
+      });
+
+      if (items.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'text-center text-gray-500 py-6';
+        empty.textContent = 'No encontramos coincidencias.';
+        lista.appendChild(empty);
+      }
+    }
+
+    btnGuest.addEventListener('click', () => { openModal('picker-modal'); buscar.value = ''; render(''); });
+    btnCancel?.addEventListener('click', () => closeModal('picker-modal'));
+    buscar?.addEventListener('input', e => render(e.target.value));
+    btnOk?.addEventListener('click', () => {
+      if (!selected) return;
+      // Aplica la familia elegida (sin mostrar nombres)
+      window.__aplicarFamiliaEntry(selected.entry);
+      closeModal('picker-modal');
+    });
+
+    // Soporte de ?guest / ?c= también aquí
+    const qp = new URLSearchParams(location.search);
+    const isGuest = ['1', 'si', 'true'].includes((qp.get('guest') || '').toLowerCase());
+    const code = (qp.get('c') || qp.get('code') || '').toUpperCase();
+    setTimeout(() => {
+      if (code && DB[code]) window.__aplicarFamiliaEntry(DB[code]);
+      else if (isGuest && DB['INVITADO']) window.__aplicarFamiliaEntry(DB['INVITADO']);
+    }, 350);
+  })();
+
+  // ---------- Flecha “Desliza” (hint por inactividad) ----------
+  (function setupScrollHint() {
+    const hero = document.querySelector('header.hero-bg');
+    const hint = document.getElementById('scroll-hint');
+    const icon = document.getElementById('scroll-hint-icon');
+    if (!hero || !hint) return;
+    const hasTailwind = !!document.querySelector('script[src*="tailwind"]');
+
+    function showHint() { hint.classList.remove('hidden'); hint.classList.add('is-visible'); if (hasTailwind) icon?.classList.add('animate-bounce'); else hint.classList.add('bounce-fallback'); }
+    function hideHint() { hint.classList.remove('is-visible', 'bounce-fallback'); icon?.classList.remove('animate-bounce'); }
+
+    let timer; function reset() { clearTimeout(timer); timer = setTimeout(showHint, 5000); }
+    const onInteract = () => { hideHint(); reset(); };
+    ['scroll', 'click', 'keydown', 'touchstart', 'mousemove'].forEach(ev => window.addEventListener(ev, onInteract, { passive: true }));
+    window.addEventListener('scroll', () => {
+      const bottom = hero.getBoundingClientRect().bottom;
+      if (bottom < window.innerHeight * 0.6) hideHint();
+    }, { passive: true });
+
+    reset();
+  })();
+
+});
+
+//DESCARGAR INVITACIÓN
+// === DESCARGA DE INVITACIÓN COMO HTML AUTOCONTENIDO ===
+// Toma recursos del mismo dominio (fotos/, assets/audio/, estilos.css) y los incrusta.
+// Mantiene librerías por CDN (Tailwind/AOS/FontAwesome), por lo que requiere internet para verse idéntico.
+
+(function () {
+  async function urlToDataURL(url) {
+    try {
+      const res = await fetch(url, { cache: "no-cache" });
+      const blob = await res.blob();
+      return await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    } catch (e) {
+      console.warn("No se pudo inyectar:", url, e);
+      return null;
+    }
+  }
+
+  async function inlineImagesAndMedia(root) {
+    // <img> -> dataURL
+    const imgs = root.querySelectorAll("img[src]");
+    for (const img of imgs) {
+      const src = img.getAttribute("src");
+      if (!src) continue;
+      if (/^data:/.test(src) || /^https?:\/\//.test(src)) continue; // deja externas
+      const data = await urlToDataURL(src);
+      if (data) img.setAttribute("src", data);
+    }
+
+    // <source> de <audio> -> dataURL
+    const sources = root.querySelectorAll("audio source[src], video source[src]");
+    for (const s of sources) {
+      const src = s.getAttribute("src");
+      if (!src) continue;
+      if (/^data:/.test(src) || /^https?:\/\//.test(src)) continue;
+      const data = await urlToDataURL(src);
+      if (data) s.setAttribute("src", data);
+    }
+
+    // Fondos en línea conocidos (ej: .hero-bg) – ajusta si usas más
+    const hero = root.querySelector(".hero-bg");
+    if (hero) {
+      // Si tu CSS usa url('fotos/xime.png'), lo volvemos inline
+      const bgUrl = "fotos/xime.png";
+      const data = await urlToDataURL(bgUrl);
+      if (data) {
+        hero.style.backgroundImage = `linear-gradient(rgba(0, 23, 66, .6), rgba(0, 23, 66, .6)), url('${data}')`;
+        hero.style.backgroundAttachment = "scroll"; // evita glitch en móviles al abrir el HTML
+        hero.style.backgroundPosition = "center center";
+        hero.style.backgroundSize = "cover";
+      }
+    }
+  }
+
+  async function inlineLocalCSS(root) {
+    // Reemplaza <link rel="stylesheet" href="estilos.css"> por <style> con su contenido
+    const links = [...root.querySelectorAll('link[rel="stylesheet"]')];
+    for (const link of links) {
+      const href = link.getAttribute("href") || "";
+      // Sólo inyectamos tu css local. Deja CDNs (googleapis, unpkg, cloudflare) como están.
+      if (/^(https?:)?\/\//.test(href)) continue;
+      try {
+        const cssText = await (await fetch(href, { cache: "no-cache" })).text();
+        const style = root.createElement("style");
+        style.setAttribute("data-inlined-from", href);
+        style.textContent = cssText;
+        link.parentNode.replaceChild(style, link);
+      } catch (e) {
+        console.warn("No se pudo inyectar CSS:", href, e);
+      }
+    }
+  }
+
+  function stripGatesAndScripts(root) {
+    // Quita el modal de código para que el HTML abra directo
+    const gate = root.querySelector("#codigo-modal");
+    if (gate) gate.remove();
+
+    // Quita scripts locales para que el snapshot no pida código ni reproduzca música solo
+    root.querySelectorAll('script[src="codigos.js"], script[src="main.js"]').forEach(s => s.remove());
+    // Deja librerías externas (Tailwind/AOS/FontAwesome) para que la vista coincida con la original
+  }
+
+  function tweakRuntimeThings(root) {
+    // Pausa música por defecto en el snapshot
+    const audio = root.querySelector("#bg-music");
+    if (audio) {
+      audio.removeAttribute("autoplay");
+    }
+    // Asegura que el mensaje personalizado visible (si ya estaba mostrado en la sesión original)
+    const mp = root.querySelector("#mensaje-personalizado");
+    if (mp && mp.classList.contains("hidden")) {
+      // No forzamos a mostrarlo, pues depende del código ingresado; deja como estaba
+    }
+  }
+
+  async function construirSnapshotHTML() {
+    // Clon profundo del documento actual
+    const doc = document.documentElement.cloneNode(true);
+
+    // Trabajamos en el clon
+    stripGatesAndScripts(doc);
+    await inlineLocalCSS(doc);
+    await inlineImagesAndMedia(doc);
+    tweakRuntimeThings(doc);
+
+    // Sugerencia: agrega un aviso pequeño en el pie del snapshot
+    const footer = doc.querySelector("footer");
+    if (footer) {
+      const note = doc.createElement("p");
+      note.className = "text-xs text-gray-400 mt-2";
+      note.textContent = "Copia local generada desde la invitación original.";
+      footer.appendChild(note);
+    }
+
+    // Serializa
+    const html = "<!DOCTYPE html>\n" + doc.outerHTML;
+    return new Blob([html], { type: "text/html;charset=utf-8" });
+  }
+
+  async function descargarInvitacion() {
+    const blob = await construirSnapshotHTML();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "invitacion_ximena.html";
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      URL.revokeObjectURL(url);
+      a.remove();
+    }, 0);
+  }
+
+  // Botones
+  document.addEventListener("DOMContentLoaded", () => {
+    const btn = document.getElementById("btn-descargar");
+    if (btn) btn.addEventListener("click", descargarInvitacion);
+
+    const btnPdf = document.getElementById("btn-pdf");
+    if (btnPdf) btnPdf.addEventListener("click", (e) => {
+      e.preventDefault();
+      window.print();
+    });
+  });
+})();
+

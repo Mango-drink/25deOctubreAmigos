@@ -1,115 +1,94 @@
-/* =========================
-   Fuentes & Paleta
-   ========================= */
-.font-great-vibes { font-family: 'Great Vibes', cursive; }
-.font-montserrat  { font-family: 'Montserrat', sans-serif; }
+/* ===== Fuentes ===== */
+.font-great-vibes {
+  font-family: 'Great Vibes', cursive;
+}
 
-:root{
+.font-montserrat {
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* ===== Paleta ===== */
+:root {
   --royal-dark: #001742;
   --royal-base: #0a2d6c;
   --royal-light: #e6e9f2;
   --royal-extralight: #f5f7fa;
 }
 
-/* =========================
-   HERO (compatible iPhone)
-   ========================= */
-.hero-bg{
-  /* Fallback sólido detrás de la imagen */
-  background-color: var(--royal-dark);
-
-  /* Superposición + imagen */
-  background-image:
-    linear-gradient(rgba(0,23,66,.6), rgba(0,23,66,.6)),
-    url('fotos/xime.png');
-
+/* ===== Hero con parallax ===== */
+.hero-bg {
+  background-image: linear-gradient(rgba(0, 23, 66, .6), rgba(0, 23, 66, .6)), url('fotos/xime.png');
   background-size: cover;
   background-position: center;
-  background-repeat: no-repeat;
-
-  /* iPhone: desactiva el "fixed" */
-  background-attachment: scroll;
-
-  /* Altura pantalla en iOS moderno */
-  min-height: 100svh;
+  background-attachment: fixed;
+  /* Desktop ok; en iPhone lo anulamos abajo */
+  will-change: background-position;
+  /* optimización */
 }
 
-/* Desktop / puntero fino: habilita parallax */
-@media (min-width: 1025px) and (pointer: fine){
-  .hero-bg{ background-attachment: fixed; }
+/* ===== Galería (scroll horizontal limpio) ===== */
+.scroll-container {
+  scrollbar-width: none;
 }
 
-/* iOS Safari: fuerza scroll por si acaso */
-@supports (-webkit-touch-callout: none){
-  .hero-bg{ background-attachment: scroll !important; }
+.scroll-container::-webkit-scrollbar {
+  display: none;
 }
 
-/* =========================
-   Utilidades
-   ========================= */
-.shadow-glow{
-  box-shadow: 0 0 24px 2px #fff, 0 10px 24px rgba(0,23,66,.13);
-}
-
-/* Ocultar barras de scroll en contenedores horizontales */
-.scroll-container{
-  -ms-overflow-style: none;   /* IE/Edge legacy */
-  scrollbar-width: none;      /* Firefox */
-}
-.scroll-container::-webkit-scrollbar{ display: none; } /* Chrome/Safari */
-
-/* =========================
-   Galería
-   ========================= */
-.gallery-thumb{
+.gallery-thumb {
   position: relative;
   cursor: pointer;
   overflow: hidden;
-  border-radius: .75rem;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / .1), 0 2px 4px -2px rgb(0 0 0 / .1);
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
-.gallery-thumb img{
-  display: block;
-  width: 100%;
-  height: auto;
-  transition: transform .4s ease;
-}
-.gallery-thumb:hover img{ transform: scale(1.05); }
 
-.gallery-thumb .overlay{
+.gallery-thumb:hover img {
+  transform: scale(1.05);
+  transition: transform 0.4s ease;
+}
+
+/* Overlay opcional para hover en thumbs */
+.gallery-thumb .overlay {
   position: absolute;
   inset: 0;
-  background-color: rgba(0,0,0,.5);
+  background-color: rgba(0, 0, 0, .5);
   display: flex;
   align-items: center;
   justify-content: center;
   opacity: 0;
   transition: opacity .3s ease;
 }
-.gallery-thumb:hover .overlay{ opacity: 1; }
 
-/* =========================
-   Modal
-   ========================= */
-.modal-container.hidden{ display: none; }
+.gallery-thumb:hover .overlay {
+  opacity: 1;
+}
 
-#prev-image, #next-image{
-  background: rgba(0,0,0,.4);
+/* ===== Modal ===== */
+.modal-container.hidden {
+  display: none;
+}
+
+/* Flechas del modal de galería */
+#prev-image,
+#next-image {
+  background: rgba(0, 0, 0, .4);
   border-radius: 50%;
   padding: .5rem .8rem;
 }
-#prev-image:hover, #next-image:hover{
-  background: rgba(0,0,0,.6);
+
+#prev-image:hover,
+#next-image:hover {
+  background: rgba(0, 0, 0, .6);
 }
 
-/* =========================
-   Timeline
-   ========================= */
-.timeline-item{
+/* ===== Timeline ===== */
+.timeline-item {
   position: relative;
   padding-bottom: 2.5rem;
 }
-.timeline-item:not(:last-child)::before{
+
+.timeline-item:not(:last-child)::before {
   content: '';
   position: absolute;
   top: 1rem;
@@ -118,7 +97,8 @@
   width: 2px;
   background-color: var(--royal-light);
 }
-.timeline-dot{
+
+.timeline-dot {
   position: absolute;
   left: 0;
   top: .5rem;
@@ -128,33 +108,46 @@
   background-color: var(--royal-base);
   border: 2px solid var(--royal-extralight);
 }
-.timeline-icon:hover{
+
+/* Iconos itinerario animados */
+.timeline-icon:hover {
   transform: scale(1.2);
   transition: transform .3s ease;
 }
 
-/* =========================
-   Chips de invitados
-   ========================= */
-#lista-invitados li{
+/* ===== Sombras utilitarias ===== */
+.shadow-glow {
+  box-shadow: 0 0 24px 2px #fff, 0 10px 24px rgba(0, 23, 66, .13);
+}
+
+/* ===== Chips de invitados ===== */
+#lista-invitados li {
   background: #ffffffcc;
   color: var(--royal-base);
   border: 1px solid #dbe1f1;
   padding: 6px 10px;
   border-radius: 9999px;
   font-size: .9rem;
-  box-shadow: 0 1px 2px rgba(0,0,0,.05);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .05);
   transition: transform .2s ease;
 }
-#lista-invitados li:hover{ transform: translateY(-1px); }
 
-
-/* Evita cualquier desborde horizontal en móvil */
-html, body {
-  width: 100%;
-  max-width: 100%;
-  overflow-x: hidden;
+#lista-invitados li:hover {
+  transform: translateY(-1px);
 }
 
-/* Ya lo tienes, pero reafirmo el alto del hero estable en móvil */
-.hero-bg { min-height: 100svh; }
+/* ===== iPhone / Safari fixes ===== */
+
+/* 1) Safari iOS: evita “huecos” y glitches del background fijo */
+@supports (-webkit-touch-callout: none) {
+  .hero-bg {
+    background-attachment: scroll !important;
+    /* anula 'fixed' solo en iOS */
+    background-position: center center;
+  }
+}
+
+/* 2) Modales: evita “rebotes” al scroll en iOS */
+.modal-container {
+  overscroll-behavior: contain;
+}
