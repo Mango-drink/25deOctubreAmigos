@@ -19,12 +19,14 @@
 .hero-bg {
   background-image: linear-gradient(rgba(0, 23, 66, .6), rgba(0, 23, 66, .6)), url('fotos/xime.png');
   background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  /* Desktop ok; en iPhone lo anulamos abajo */
-  will-change: background-position;
-  /* optimización */
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: scroll; /* fuerza scroll para evitar bug en móviles */
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
+
 
 /* ===== Galería (scroll horizontal limpio) ===== */
 .scroll-container {
@@ -150,4 +152,9 @@
 /* 2) Modales: evita “rebotes” al scroll en iOS */
 .modal-container {
   overscroll-behavior: contain;
+}
+
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
 }
