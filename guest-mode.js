@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (bloque) bloque.classList.remove('hidden');
 
   const titulo = document.getElementById('familia-nombre');
-  if (titulo) titulo.textContent = 'Seres Queridos';
+  if (titulo) titulo.textContent = 'Amigos';
 
   const badgeCantidad = document.getElementById('familia-cantidad');
   if (badgeCantidad) {
