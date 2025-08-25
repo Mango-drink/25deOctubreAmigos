@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (bloque) bloque.classList.remove('hidden');
 
   const titulo = document.getElementById('familia-nombre');
-  if (titulo) titulo.textContent = 'Amigos';
+  if (titulo) titulo.textContent = 'La fiesta es con ustedes';
 
   const badgeCantidad = document.getElementById('familia-cantidad');
   if (badgeCantidad) {
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const mensaje = document.getElementById('familia-mensaje');
   if (mensaje) {
-    mensaje.textContent = 'Querida familia, con mucha alegría quiero compartir con ustedes este momento tan importante en mi vida. Los invito a acompañarme el 25 de Octubre de 2025 para celebrar mis XV años. Su presencia hará de esta noche un recuerdo inolvidable.';
+    mensaje.textContent = '¡Hey! Se viene una noche que no te puedes perder… mis XV años. Prepárate para bailar, reír y disfrutar al máximo porque esta fiesta está hecha para que la pasemos increíble.';
   }
 
   // 3) Si tu main.js marca algo de "gateo por código", neutralízalo aquí:

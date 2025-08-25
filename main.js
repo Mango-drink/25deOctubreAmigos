@@ -389,7 +389,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // === NOMBRE A MOSTRAR ===
       const displayName = (window.nombreParaMostrar)
         ? window.nombreParaMostrar(entry)
-        : (entry?.display || entry?.nombre || entry?.familia || 'Amigos');
+        : (entry?.display || entry?.nombre || entry?.familia || 'La fiesta es con ustedes');
       titulo.textContent = displayName;
 
       // === CANTIDAD / BADGE ===
@@ -481,7 +481,7 @@ document.addEventListener('DOMContentLoaded', () => {
       .map(([code, entry]) => {
         const nombre = (window.nombreParaMostrar)
           ? window.nombreParaMostrar(entry)
-          : (entry?.display || entry?.nombre || entry?.familia || 'Amigos');
+          : (entry?.display || entry?.nombre || entry?.familia || 'La fiesta es con ustedes');
 
         const cantidad = (typeof entry?.invitados === 'number') ? entry.invitados
           : Array.isArray(entry?.invitados) ? entry.invitados.length
@@ -506,7 +506,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const el = document.createElement('button');
         el.type = 'button';
         el.className = 'w-full text-left p-3 rounded border hover:bg-gray-50';
-        el.innerHTML = `<div class="font-medium">${f.nombre || 'Amigos'}</div>
+        el.innerHTML = `<div class="font-medium">${f.nombre || 'La fiesta es con ustedes'}</div>
                         <div class="text-xs text-gray-600">${f.code} • ${f.cantidad} invitado${f.cantidad === 1 ? '' : 's'}</div>`;
         el.addEventListener('click', () => {
           [...lista.querySelectorAll('button')].forEach(b => b.classList.remove('ring-2', 'ring-[#001742]'));
